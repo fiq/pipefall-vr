@@ -26,6 +26,7 @@ class QuestActivity : Activity() {
         super.onResume()
         configureFullscreen()
         renderView.onResume()
+        renderView.requestFocus()
     }
 
     override fun onPause() {

@@ -218,6 +218,12 @@ QuestActivity
 Simulation
   -> still pure Kotlin
   -> still independent of Android
+
+## Loop 13: Controller Events Reach The Renderer
+
+This loop wired the first real Quest input path instead of leaving controller support as a stub. The renderer view now listens for joystick and gamepad motion, rotates on a pressed button, and treats trigger pulls as hard drops. Thumbstick input is debounced at the renderer boundary so holding a direction does not spray commands every frame.
+
+That matters because the prototype is still trying to stay deterministic. The simulation continues to own the game rules, while Android only translates controller events into explicit commands. The loop also tightened focus handling so the Quest surface is ready to receive controller input when the activity resumes.
 ```
 
 This gives the next loop a clean target: verify the current Meta XR and OpenXR Android setup before installing real headset plumbing. The shell is now ready to host that work without tempting the simulation to learn about Android.

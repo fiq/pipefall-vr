@@ -148,3 +148,10 @@ This file records build, test, device, design, and process failures encountered 
 - Added: `BoardRenderer` now renders active module cells from `SimulationState.activeModule` with material-based colors and a small lift above the board plane.
 - Verification: `nix develop --command scripts/pressure_check.sh` passed.
 - Device: Quest run not attempted in this loop.
+
+### 2026-06-28 - Quest Controller Input Wiring
+
+- Context: Wired Quest controller input events into the renderer boundary so thumbstick, rotate, and trigger actions can emit deterministic `SimulationCommand` values.
+- Added: `InputController` now debounces thumbstick direction changes, `QuestRenderView` handles joystick/gamepad motion plus button presses, and the Quest activity requests focus on resume so controller events can reach the render surface.
+- Verification: `nix develop --command scripts/pressure_check.sh` passed.
+- Device: Quest run not attempted in this loop.
