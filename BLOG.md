@@ -221,3 +221,17 @@ Simulation
 ```
 
 This gives the next loop a clean target: verify the current Meta XR and OpenXR Android setup before installing real headset plumbing. The shell is now ready to host that work without tempting the simulation to learn about Android.
+
+## Loop 13: The Shell Checks Out
+
+The Quest launcher shell now matches the current Meta Horizon OS manifest guidance instead of just being a generic Android activity. The manifest gained the release-build pieces Meta calls out for Quest apps: headtracking declared with version `1`, `installLocation="auto"`, `excludeFromRecents="true"`, the OpenXR launch category, and supported-device metadata. I also moved the app target to SDK 34 while keeping compile SDK 35 so the build stays current without drifting outside the documented immersive release range.
+
+That change is intentionally small, but it matters. The project now has a launcher that is shaped like a Quest app rather than merely running on an Android device. The actual Meta XR and OpenXR runtime plumbing is still for the next stage, but the Android shell no longer needs to guess at the release-side contract.
+
+```text
+manifest -> store-friendly Quest shell
+build    -> target 34, compile 35
+view     -> Android host only
+```
+
+The next loop can now start on renderer setup with the confidence that the platform-facing envelope is already doing the right boring things.

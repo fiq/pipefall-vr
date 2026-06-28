@@ -43,11 +43,10 @@ For every Ralph loop:
 
 ## Next
 
-- [ ] Verify Meta XR SDK/OpenXR Android setup against current official Meta documentation.
+- [ ] Add OpenGL ES 3.2 renderer skeleton.
 
 ## Backlog
 
-- [ ] Verify Meta XR SDK/OpenXR Android setup against current official Meta documentation.
 - [ ] Add OpenGL ES 3.2 renderer skeleton.
 - [ ] Render fixed floating construction board.
 - [ ] Render locked board cells as simple 3D geometry.

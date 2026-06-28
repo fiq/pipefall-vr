@@ -11,7 +11,7 @@ android {
     defaultConfig {
         applicationId = "com.pipefall.pressure"
         minSdk = 29
-        targetSdk = 35
+        targetSdk = 34
         versionCode = 1
         versionName = "0.1.0"
     }

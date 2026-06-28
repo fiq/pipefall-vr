@@ -4,9 +4,9 @@ This file records build, test, device, design, and process failures encountered 
 
 ## Current Known Issues
 
-- Meta XR SDK/OpenXR Android setup has not yet been verified against current official Meta documentation.
+- Meta XR SDK/OpenXR runtime integration has not yet been added.
 - No Quest device run has been performed.
-- Foundational board, module catalog, rotation, collision, water, pressure, support, failure, simulation tests, and Android activity shell exist, but Meta XR/OpenXR setup and device validation are still pending.
+- Foundational board, module catalog, rotation, collision, water, pressure, support, failure, simulation tests, and Android activity shell exist, but renderer integration and device validation are still pending.
 
 ## Failure Log
 
@@ -111,5 +111,12 @@ This file records build, test, device, design, and process failures encountered 
 
 - Context: Added a dedicated Android shell view for the Quest launch activity.
 - Added: `QuestActivity` now owns full-screen keep-awake Android window behavior and hosts `QuestShellView` as the renderer placeholder.
+- Verification: `nix develop --command scripts/pressure_check.sh` passed.
+- Device: Quest run not attempted in this loop.
+
+### 2026-06-28 - Meta Quest Shell Verification
+
+- Context: Verified the Android shell against the current Meta Horizon OS manifest guidance for Quest release builds.
+- Added: `AndroidManifest.xml` now includes `android.hardware.vr.headtracking` with version `1`, `installLocation="auto"`, `excludeFromRecents="true"`, `com.oculus.intent.category.VR`, and `com.oculus.supportedDevices` metadata. `app/build.gradle.kts` now targets SDK 34 while still compiling against SDK 35.
 - Verification: `nix develop --command scripts/pressure_check.sh` passed.
 - Device: Quest run not attempted in this loop.
