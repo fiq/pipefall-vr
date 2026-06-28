@@ -27,14 +27,14 @@ For every Ralph loop:
 - [x] Add pure Kotlin simulation package with board, cell, material, and grid position types.
 - [x] Add lightweight agentic/static check harness and testing trophy CI command.
 - [x] Add engineering module definitions and deterministic module generator.
+- [x] Add module rotation tests.
 
 ## Next
 
-- [ ] Add module rotation tests.
+- [ ] Add board collision and lock rules.
 
 ## Backlog
 
-- [ ] Add board collision and lock rules.
 - [ ] Add collision tests.
 - [ ] Add deterministic water height update.
 - [ ] Add pressure system and pressure tests.

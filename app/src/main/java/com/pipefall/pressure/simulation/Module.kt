@@ -28,6 +28,26 @@ data class Module(
     fun cellMap(): Map<GridPosition, Cell> =
         cells.associate { it.offset to it.cell }
 
+    fun rotatedClockwise(): Module =
+        copy(
+            cells = cells.map {
+                ModuleCell(
+                    offset = GridPosition(
+                        x = height - 1 - it.offset.y,
+                        y = it.offset.x,
+                    ),
+                    cell = it.cell,
+                )
+            }.sortedByOffset(),
+        )
+
+    fun rotatedClockwise(turns: Int): Module {
+        require(turns >= 0) { "turns must be non-negative" }
+        return (0 until turns).fold(this) { module, _ ->
+            module.rotatedClockwise()
+        }
+    }
+
     private fun isConnected(): Boolean {
         val remaining = cells.map { it.offset }.toMutableSet()
         val frontier = ArrayDeque<GridPosition>()
@@ -51,3 +71,6 @@ data class Module(
         const val MAX_CELLS: Int = 6
     }
 }
+
+internal fun List<ModuleCell>.sortedByOffset(): List<ModuleCell> =
+    sortedWith(compareBy<ModuleCell> { it.offset.y }.thenBy { it.offset.x })

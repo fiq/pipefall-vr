@@ -112,6 +112,6 @@ object EngineeringModules {
                 }
             }
         }
-        return Module(type, cells)
+        return Module(type, cells.sortedByOffset())
     }
 }

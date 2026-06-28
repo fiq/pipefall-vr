@@ -77,3 +77,24 @@ XX                    XX
 The generator is deterministic on purpose. Given the same seed and spawn index, it returns the same module every time. That is not glamorous, but it means a failure cascade can eventually be reproduced from a test instead of remembered from a headset session.
 
 The drain block is the first tiny hint of the future game: its center cell is genuinely a weak drain, not just a differently colored cube. The pressure relief chamber already carries its special function too. Nothing uses those functions yet, but the data model now has places for the dam to become more than a wall.
+
+## Loop 4: Turning Heavy Things
+
+Rotation is where a falling module starts to feel like a thing the player can handle, not just a row in a catalog.
+
+The implementation is intentionally mechanical: rotate the module inside its bounding box, normalize the offsets, preserve the cells. No physics. No pivot drama. No controller nuance yet. Just deterministic shape transformation that can be trusted later by collision and lock rules.
+
+```text
+beam clockwise:
+
+XXX    X
+       X
+       X
+
+buttress clockwise:
+
+X.     .X
+XX     XX
+```
+
+The useful detail is preservation. A drain remains a drain after rotation. A full four clockwise turns returns every module to the original shape and cells. That sounds obvious, but obvious rules are exactly what the later pressure system needs: the player should blame a breach on a weak dam, not on mysterious geometry.
