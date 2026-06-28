@@ -26,14 +26,14 @@ For every Ralph loop:
 - [x] Add `README.md`, `AGENTS.md`, and `BLOG.md` repo guardrails.
 - [x] Add pure Kotlin simulation package with board, cell, material, and grid position types.
 - [x] Add lightweight agentic/static check harness and testing trophy CI command.
+- [x] Add engineering module definitions and deterministic module generator.
 
 ## Next
 
-- [ ] Add engineering module definitions and deterministic module generator.
+- [ ] Add module rotation tests.
 
 ## Backlog
 
-- [ ] Add module rotation tests.
 - [ ] Add board collision and lock rules.
 - [ ] Add collision tests.
 - [ ] Add deterministic water height update.

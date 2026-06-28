@@ -6,7 +6,7 @@ This file records build, test, device, design, and process failures encountered 
 
 - Meta XR SDK/OpenXR Android setup has not yet been verified against current official Meta documentation.
 - No Quest device run has been performed.
-- Foundational board tests exist, but module, pressure, support, failure, and full simulation tests do not exist yet.
+- Foundational board and module catalog tests exist, but rotation, collision, pressure, support, failure, and full simulation tests do not exist yet.
 
 ## Failure Log
 
@@ -38,5 +38,13 @@ This file records build, test, device, design, and process failures encountered 
 - Context: Added pure Kotlin `simulation` types for `Board`, `Cell`, `Material`, structural state, cell function, and grid position.
 - Added: Basic board unit tests covering dimensions, immutable placement, bounds checks, removal, and deterministic face bonds.
 - Added: `scripts/agent_check.sh` to catch missing docs, whitespace issues, simulation API boundary violations, forbidden clone-like source language, and obvious local/sensitive content.
+- Verification: `nix develop --command bash -lc 'scripts/agent_check.sh && gradle --no-daemon lintDebug test assembleDebug'` passed.
+- Device: Quest run not attempted in this loop.
+
+### 2026-06-28 - Engineering Module Catalog
+
+- Context: Added named engineering module definitions and deterministic module generator.
+- Added: Module catalog includes concrete slab, reinforced beam, short pillar, buttress, corner retaining section, drain block, spillway, reinforcement cage, pressure relief chamber, and inspection shaft.
+- Added: Module catalog tests cover required ordering, connected cell counts, slab shape, drain center material/function, and seeded deterministic generation.
 - Verification: `nix develop --command bash -lc 'scripts/agent_check.sh && gradle --no-daemon lintDebug test assembleDebug'` passed.
 - Device: Quest run not attempted in this loop.
