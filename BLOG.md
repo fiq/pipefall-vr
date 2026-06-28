@@ -118,3 +118,17 @@ Locking is still deterministic and non-physical. A module becomes board cells, t
 This loop also tightened the agent harness around code quality. The project now states the SRP rule out loud: one reason to change per production type, one rule family per system, no god classes quietly swallowing the prototype. The harness enforces a coarse Kotlin file-size limit so the codebase starts complaining before a class becomes a dumping ground.
 
 There is also a new shortcut for future loops: `scripts/pressure_check.sh`. It runs the agent guard, Android lint, unit tests, and debug assembly. The repo-local `pressure-ralph` skill captures the repeatable workflow so future agents do not need the whole backstory before doing the next small piece of dam engineering.
+
+## Loop 6: The Reservoir Starts Keeping Time
+
+Water does not need fluid simulation yet. It needs discipline.
+
+This loop added the smallest useful water model: a height, a partial-tick remainder, and a deterministic rule for when the reservoir rises. After a fixed number of ticks, height increases by a fixed amount. If several intervals pass at once, water can rise multiple steps in one advance. If it hits the top of the board, it clamps there and throws away leftover timing state.
+
+```text
+ticks:      0 1 2 3 4 5 6 7
+height:     0 0 0 1 1 1 2 2
+remainder:  0 1 2 0 1 2 0 1
+```
+
+That is intentionally austere, because the point is not realism. The point is to create a repeatable rising threat that future pressure rules can read without asking Android time APIs, render timing, or headset state what happened. The water system now behaves like the rest of the simulation should behave: given the same state and the same tick count, it produces the same answer every time.

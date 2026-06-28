@@ -6,7 +6,7 @@ This file records build, test, device, design, and process failures encountered 
 
 - Meta XR SDK/OpenXR Android setup has not yet been verified against current official Meta documentation.
 - No Quest device run has been performed.
-- Foundational board, module catalog, rotation, and collision tests exist, but water, pressure, support, failure, and full simulation tests do not exist yet.
+- Foundational board, module catalog, rotation, collision, and water tests exist, but pressure, support, failure, and full simulation tests do not exist yet.
 
 ## Failure Log
 
@@ -62,5 +62,12 @@ This file records build, test, device, design, and process failures encountered 
 - Added: Collision tests cover empty placement, board bounds, locked-cell overlap, immutable locking, bond recalculation, and lock rejection.
 - Added: SRP/code-smell guardrails to `ARCHITECTURE.md`, `AGENTS.md`, and `scripts/agent_check.sh`.
 - Added: `scripts/pressure_check.sh` and `skills/pressure-ralph/SKILL.md` to reduce repeated loop instructions.
+- Verification: `nix develop --command scripts/pressure_check.sh` passed.
+- Device: Quest run not attempted in this loop.
+
+### 2026-06-28 - Deterministic Water Height
+
+- Context: Added a pure Kotlin water state and water rise system for deterministic height progression.
+- Added: Water tests cover empty initial state, partial tick carry, single and multi-rise advances, top clamping, zero-tick no-op behavior, and invalid input rejection.
 - Verification: `nix develop --command scripts/pressure_check.sh` passed.
 - Device: Quest run not attempted in this loop.
