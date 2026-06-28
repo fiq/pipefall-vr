@@ -9,13 +9,14 @@ import com.pipefall.pressure.simulation.SimulationState
 
 class BoardRenderer(
     private val meshFactory: MeshFactory = MeshFactory(),
+    private val waterRenderer: WaterRenderer = WaterRenderer(meshFactory),
 ) {
     private val boardDistanceMeters = 2.5f
     private val cellSizeMeters = 0.12f
     private val cellDepthMeters = 0.06f
     private val cellCenterOffsetMeters = cellDepthMeters / 2f
     private val activeModuleLiftMeters = 0.11f
-    private val surfaceColor = floatArrayOf(0.68f, 0.70f, 0.72f, 1f)
+    private val surfaceColor = floatArrayOf(0.68f, 0.70f, 0.72f, 0.84f)
     private val gridColor = floatArrayOf(0.36f, 0.39f, 0.42f, 1f)
 
     private var program: GlProgram? = null
@@ -43,6 +44,7 @@ class BoardRenderer(
             mvpHandle = shader.uniformLocation("uMvpMatrix")
             colorHandle = shader.uniformLocation("uColor")
         }
+        waterRenderer.onSurfaceCreated()
     }
 
     fun draw(
@@ -72,6 +74,7 @@ class BoardRenderer(
         GLES32.glEnable(GLES32.GL_DEPTH_TEST)
         GLES32.glDepthMask(true)
 
+        waterRenderer.draw(state, boardModelMatrix, viewMatrix, projectionMatrix, cellSizeMeters)
         drawMesh(surfaceMesh, surfaceColor)
         drawMesh(gridMesh, gridColor)
         drawLockedCells(state.board)
@@ -146,12 +149,12 @@ class BoardRenderer(
 
     private fun colorFor(material: Material): FloatArray =
         when (material) {
-            Material.CONCRETE -> floatArrayOf(0.76f, 0.77f, 0.79f, 1f)
-            Material.STEEL -> floatArrayOf(0.48f, 0.52f, 0.56f, 1f)
-            Material.DRAIN -> floatArrayOf(0.28f, 0.42f, 0.66f, 1f)
-            Material.SPILLWAY -> floatArrayOf(0.67f, 0.61f, 0.46f, 1f)
-            Material.REINFORCEMENT -> floatArrayOf(0.67f, 0.49f, 0.28f, 1f)
-            Material.SERVICE_SHAFT -> floatArrayOf(0.35f, 0.34f, 0.32f, 1f)
+            Material.CONCRETE -> floatArrayOf(0.76f, 0.77f, 0.79f, 0.97f)
+            Material.STEEL -> floatArrayOf(0.48f, 0.52f, 0.56f, 0.97f)
+            Material.DRAIN -> floatArrayOf(0.28f, 0.42f, 0.66f, 0.96f)
+            Material.SPILLWAY -> floatArrayOf(0.67f, 0.61f, 0.46f, 0.96f)
+            Material.REINFORCEMENT -> floatArrayOf(0.67f, 0.49f, 0.28f, 0.96f)
+            Material.SERVICE_SHAFT -> floatArrayOf(0.35f, 0.34f, 0.32f, 0.96f)
         }
 
     private fun activeModuleColorFor(moduleCell: ModuleCell): FloatArray {

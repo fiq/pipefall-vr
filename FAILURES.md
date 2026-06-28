@@ -155,3 +155,10 @@ This file records build, test, device, design, and process failures encountered 
 - Added: `InputController` now debounces thumbstick direction changes, `QuestRenderView` handles joystick/gamepad motion plus button presses, and the Quest activity requests focus on resume so controller events can reach the render surface.
 - Verification: `nix develop --command scripts/pressure_check.sh` passed.
 - Device: Quest run not attempted in this loop.
+
+### 2026-06-28 - Water Plane Behind The Wall
+
+- Context: Added a translucent water fill behind the board surface so the rising reservoir is visible in the renderer.
+- Added: `WaterRenderer` now owns the water plane pass, `MeshFactory` now provides a reusable flat quad, and `BoardRenderer` delegates water rendering so the board/cell renderer stays under the local size guard.
+- Verification: `nix develop --command scripts/pressure_check.sh` passed after splitting water into its own renderer to satisfy `scripts/agent_check.sh`.
+- Device: Quest run not attempted in this loop.

@@ -45,17 +45,17 @@ For every Ralph loop:
 - [x] Render locked board cells as simple 3D geometry.
 - [x] Render active descending engineering module.
 - [x] Wire Quest controller thumbstick, rotate button, and trigger drop inputs.
+- [x] Render water plane behind the wall.
 
 ## Next
 
-- [ ] Render water plane behind the wall.
+- [ ] Render cracked and failed cell states.
 
 ## Backlog
 
 - [ ] Render fixed floating construction board.
 - [ ] Render locked board cells as simple 3D geometry.
 - [ ] Render active descending engineering module.
-- [ ] Render water plane behind the wall.
 - [ ] Render cracked and failed cell states.
 - [ ] Add debug statistics snapshot.
 - [ ] Add debug overlay for FPS, water height, max pressure, cracked count, failed count, support heatmap, and pressure heatmap.

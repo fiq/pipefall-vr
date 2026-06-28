@@ -64,6 +64,20 @@ class MeshFactory {
                 ),
         )
 
+    fun createUnitQuad(): Mesh =
+        Mesh(
+            drawMode = MeshDrawMode.TRIANGLES,
+            vertices =
+                floatArrayOf(
+                    -0.5f, -0.5f, 0f,
+                    0.5f, -0.5f, 0f,
+                    -0.5f, 0.5f, 0f,
+                    -0.5f, 0.5f, 0f,
+                    0.5f, -0.5f, 0f,
+                    0.5f, 0.5f, 0f,
+                ),
+        )
+
     fun createBoardSurface(
         columns: Int,
         rows: Int,
