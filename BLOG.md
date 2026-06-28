@@ -250,3 +250,21 @@ Input    -> future controller mapping
 ```
 
 The frame is still mostly empty, but the project now has the structural spine needed for the next set of rendering loops.
+
+## Loop 15: The Board Gets A Shadow
+
+The first visible object is not a cell. It is the thing that makes the cells matter: a fixed floating board, two and a half meters out in front of the player, centered on the 12 by 20 grid. That choice keeps the prototype honest. Before the dam can crack, the player needs a surface that reads as infrastructure instead of a blank stage.
+
+I kept the geometry pure on purpose. `MeshFactory` now emits a board surface and grid as plain data, while `BoardRenderer` turns that data into a perspective draw call. That split is small but useful: the model stays testable, the renderer stays disposable, and the shape of the board is encoded where future cell rendering can reuse it.
+
+```text
+world anchor
+    |
+    v
+fixed board surface
+    |
+    v
+grid cells waiting for modules
+```
+
+The board is still empty, which is the right kind of empty. It now looks like the place where a dam will be built, not just the place where a dam could have been.

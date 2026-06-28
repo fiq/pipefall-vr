@@ -6,7 +6,7 @@ This file records build, test, device, design, and process failures encountered 
 
 - Meta XR SDK/OpenXR runtime integration has not yet been added.
 - No Quest device run has been performed.
-- Foundational board, module catalog, rotation, collision, water, pressure, support, failure, simulation tests, Android activity shell, and renderer skeleton exist, but device validation is still pending.
+- Foundational board, module catalog, rotation, collision, water, pressure, support, failure, simulation tests, Android activity shell, renderer skeleton, and fixed board surface exist, but device validation is still pending.
 
 ## Failure Log
 
@@ -125,5 +125,12 @@ This file records build, test, device, design, and process failures encountered 
 
 - Context: Added a minimal OpenGL ES 3.2 renderer host with an overlay shell.
 - Added: `QuestRenderView` now owns a `GLSurfaceView`, `OpenXRRenderer` clears the frame and tracks viewport state, and lightweight `BoardRenderer`, `MeshFactory`, and `InputController` classes establish the renderer boundary.
+- Verification: `nix develop --command scripts/pressure_check.sh` passed.
+- Device: Quest run not attempted in this loop.
+
+### 2026-06-28 - Fixed Floating Construction Board
+
+- Context: Added the first visible world object in the renderer: a fixed board surface and grid anchored 2.5 meters in front of the player.
+- Added: `MeshFactory` now generates pure board surface and grid geometry, `BoardRenderer` uploads and draws the board in a perspective view, and a small renderer test checks the board dimensions stay centered on the 12 by 20 grid.
 - Verification: `nix develop --command scripts/pressure_check.sh` passed.
 - Device: Quest run not attempted in this loop.

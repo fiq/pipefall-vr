@@ -22,6 +22,7 @@ class OpenXRRenderer(
     ) {
         GLES32.glClearColor(0.07f, 0.09f, 0.11f, 1f)
         GLES32.glEnable(GLES32.GL_DEPTH_TEST)
+        boardRenderer.onSurfaceCreated()
     }
 
     override fun onSurfaceChanged(
