@@ -282,3 +282,17 @@ cells   -> actual dam mass
 ```
 
 The next loop can now focus on the active descending module without having to invent the idea of a built dam first.
+
+## Loop 17: The Module Descends
+
+The player now has something to push around in space: the active engineering module renders as a hovering 3D shape above the board, using the same cell mesh as the locked structure but lifted and tinted so it reads as temporary work-in-progress.
+
+That is a useful boundary because the simulation still owns the module state and the renderer only turns that state into something visible. It is the first time the prototype shows both the permanent dam and the thing that is about to become part of it.
+
+```text
+locked cells -> built dam
+active module -> next addition
+hover offset  -> not yet locked
+```
+
+The board now shows the difference between structure and intent, which is the right visual language for the next input loop.

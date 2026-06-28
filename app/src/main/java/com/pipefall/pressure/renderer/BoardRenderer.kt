@@ -4,6 +4,7 @@ import android.opengl.GLES32
 import android.opengl.Matrix
 import com.pipefall.pressure.simulation.Board
 import com.pipefall.pressure.simulation.Material
+import com.pipefall.pressure.simulation.ModuleCell
 import com.pipefall.pressure.simulation.SimulationState
 
 class BoardRenderer(
@@ -13,6 +14,7 @@ class BoardRenderer(
     private val cellSizeMeters = 0.12f
     private val cellDepthMeters = 0.06f
     private val cellCenterOffsetMeters = cellDepthMeters / 2f
+    private val activeModuleLiftMeters = 0.11f
     private val surfaceColor = floatArrayOf(0.68f, 0.70f, 0.72f, 1f)
     private val gridColor = floatArrayOf(0.36f, 0.39f, 0.42f, 1f)
 
@@ -73,6 +75,7 @@ class BoardRenderer(
         drawMesh(surfaceMesh, surfaceColor)
         drawMesh(gridMesh, gridColor)
         drawLockedCells(state.board)
+        drawActiveModule(state)
     }
 
     private fun ensureMeshes(board: Board) {
@@ -119,6 +122,28 @@ class BoardRenderer(
         }
     }
 
+    private fun drawActiveModule(state: SimulationState) {
+        val activeModule = state.activeModule ?: return
+        val currentCellMesh = cellMesh ?: return
+        val halfWidth = state.board.width * cellSizeMeters / 2f
+        val halfHeight = state.board.height * cellSizeMeters / 2f
+        val moduleOriginX = activeModule.origin.x * cellSizeMeters
+        val moduleOriginY = activeModule.origin.y * cellSizeMeters
+
+        for (moduleCell in activeModule.module.cells) {
+            val worldX = -halfWidth + moduleOriginX + cellSizeMeters * (moduleCell.offset.x + 0.5f)
+            val worldY = -halfHeight + moduleOriginY + cellSizeMeters * (moduleCell.offset.y + 0.5f)
+
+            Matrix.setIdentityM(cellLocalMatrix, 0)
+            Matrix.translateM(cellLocalMatrix, 0, worldX, worldY, cellCenterOffsetMeters + activeModuleLiftMeters)
+            Matrix.scaleM(cellLocalMatrix, 0, cellSizeMeters, cellSizeMeters, cellDepthMeters)
+            Matrix.multiplyMM(cellModelMatrix, 0, boardModelMatrix, 0, cellLocalMatrix, 0)
+            Matrix.multiplyMM(viewModelMatrix, 0, viewMatrix, 0, cellModelMatrix, 0)
+            Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, viewModelMatrix, 0)
+            drawMesh(currentCellMesh, activeModuleColorFor(moduleCell))
+        }
+    }
+
     private fun colorFor(material: Material): FloatArray =
         when (material) {
             Material.CONCRETE -> floatArrayOf(0.76f, 0.77f, 0.79f, 1f)
@@ -128,6 +153,16 @@ class BoardRenderer(
             Material.REINFORCEMENT -> floatArrayOf(0.67f, 0.49f, 0.28f, 1f)
             Material.SERVICE_SHAFT -> floatArrayOf(0.35f, 0.34f, 0.32f, 1f)
         }
+
+    private fun activeModuleColorFor(moduleCell: ModuleCell): FloatArray {
+        val baseColor = colorFor(moduleCell.cell.material)
+        return floatArrayOf(
+            (baseColor[0] + 0.08f).coerceAtMost(1f),
+            (baseColor[1] + 0.08f).coerceAtMost(1f),
+            (baseColor[2] + 0.08f).coerceAtMost(1f),
+            0.92f,
+        )
+    }
 
     private companion object {
         const val VERTEX_SHADER =

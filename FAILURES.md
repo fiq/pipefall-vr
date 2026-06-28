@@ -6,7 +6,7 @@ This file records build, test, device, design, and process failures encountered 
 
 - Meta XR SDK/OpenXR runtime integration has not yet been added.
 - No Quest device run has been performed.
-- Foundational board, module catalog, rotation, collision, water, pressure, support, failure, simulation tests, Android activity shell, renderer skeleton, fixed board surface, and locked-cell geometry exist, but device validation is still pending.
+- Foundational board, module catalog, rotation, collision, water, pressure, support, failure, simulation tests, Android activity shell, renderer skeleton, fixed board surface, locked-cell geometry, and active module rendering exist, but device validation is still pending.
 
 ## Failure Log
 
@@ -139,5 +139,12 @@ This file records build, test, device, design, and process failures encountered 
 
 - Context: Added the first structural volume on the board by rendering occupied cells as simple 3D prisms.
 - Added: `BoardRenderer` now draws locked cells from `Board.cells()`, `MeshFactory` now provides a unit cube mesh, and renderer tests cover the cube geometry alongside the board surface.
+- Verification: `nix develop --command scripts/pressure_check.sh` passed.
+- Device: Quest run not attempted in this loop.
+
+### 2026-06-28 - Active Descending Module
+
+- Context: Added the player-facing falling structure to the renderer by drawing the active engineering module as a hovering 3D object over the board.
+- Added: `BoardRenderer` now renders active module cells from `SimulationState.activeModule` with material-based colors and a small lift above the board plane.
 - Verification: `nix develop --command scripts/pressure_check.sh` passed.
 - Device: Quest run not attempted in this loop.

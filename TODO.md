@@ -43,10 +43,11 @@ For every Ralph loop:
 - [x] Add OpenGL ES 3.2 renderer skeleton.
 - [x] Render fixed floating construction board.
 - [x] Render locked board cells as simple 3D geometry.
+- [x] Render active descending engineering module.
 
 ## Next
 
-- [ ] Render active descending engineering module.
+- [ ] Wire Quest controller thumbstick, rotate button, and trigger drop inputs.
 
 ## Backlog
 
