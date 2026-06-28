@@ -39,14 +39,14 @@ For every Ralph loop:
 - [x] Add failure tests.
 - [x] Add simulation step orchestration.
 - [x] Add simulation tests for spawn, move, rotate, hard drop, lock, water, pressure, support, crack, failure, cascade, and game over.
+- [x] Add Android Quest activity shell.
 
 ## Next
 
-- [ ] Add Android Quest activity shell.
+- [ ] Verify Meta XR SDK/OpenXR Android setup against current official Meta documentation.
 
 ## Backlog
 
-- [ ] Add Android Quest activity shell.
 - [ ] Verify Meta XR SDK/OpenXR Android setup against current official Meta documentation.
 - [ ] Add OpenGL ES 3.2 renderer skeleton.
 - [ ] Render fixed floating construction board.

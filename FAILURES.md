@@ -6,7 +6,7 @@ This file records build, test, device, design, and process failures encountered 
 
 - Meta XR SDK/OpenXR Android setup has not yet been verified against current official Meta documentation.
 - No Quest device run has been performed.
-- Foundational board, module catalog, rotation, collision, water, pressure, support, failure, and simulation tests exist, but the Android Quest activity shell and device validation are still pending.
+- Foundational board, module catalog, rotation, collision, water, pressure, support, failure, simulation tests, and Android activity shell exist, but Meta XR/OpenXR setup and device validation are still pending.
 
 ## Failure Log
 
@@ -104,5 +104,12 @@ This file records build, test, device, design, and process failures encountered 
 
 - Context: Added an active-module simulation model with deterministic spawn, left/right movement, rotation, and hard-drop locking.
 - Added: Simulation tests cover spawn placement, movement and rotation, hard-drop locking, water-only ticks, failure cascades, and game over at the water top.
+- Verification: `nix develop --command scripts/pressure_check.sh` passed.
+- Device: Quest run not attempted in this loop.
+
+### 2026-06-28 - Android Quest Activity Shell
+
+- Context: Added a dedicated Android shell view for the Quest launch activity.
+- Added: `QuestActivity` now owns full-screen keep-awake Android window behavior and hosts `QuestShellView` as the renderer placeholder.
 - Verification: `nix develop --command scripts/pressure_check.sh` passed.
 - Device: Quest run not attempted in this loop.

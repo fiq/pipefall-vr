@@ -1,24 +1,30 @@
 package com.pipefall.pressure
 
 import android.app.Activity
-import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.view.Gravity
 import android.view.View
 import android.view.Window
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.view.WindowManager
-import android.widget.TextView
 
 class QuestActivity : Activity() {
+    private lateinit var shellView: QuestShellView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         requestWindowFeature(Window.FEATURE_NO_TITLE)
+        shellView = QuestShellView(this)
         configureFullscreen()
-        setContentView(createPlaceholderView())
+        setContentView(shellView)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        configureFullscreen()
+        shellView.setStatus(getString(R.string.shell_status))
     }
 
     @Suppress("DEPRECATION")
@@ -41,13 +47,4 @@ class QuestActivity : Activity() {
                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE
         }
     }
-
-    private fun createPlaceholderView(): View =
-        TextView(this).apply {
-            setBackgroundColor(Color.rgb(18, 22, 26))
-            setTextColor(Color.rgb(220, 225, 226))
-            gravity = Gravity.CENTER
-            textSize = 18f
-            text = getString(R.string.placeholder_status)
-        }
 }

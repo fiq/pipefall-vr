@@ -202,3 +202,22 @@ drop  -> fall until the last legal row, then lock
 ```
 
 This is the first state model that starts to feel like a game loop rather than just a physics substitute. The board still says no, water still rises on schedule, and failure still resolves deterministically, but now the player-facing piece has a concrete identity all the way through the simulation layer.
+
+## Loop 12: A Room For The Renderer
+
+The Android side now has a real shell instead of a loose placeholder. `QuestActivity` is responsible for the things Android must own: full-screen mode, keep-awake behavior, lifecycle re-entry, and a launch surface that Quest can start. The new `QuestShellView` is deliberately quiet: title, status, dark background, and no gameplay authority.
+
+That model choice is important. The activity is not the game. It is the room the renderer will walk into.
+
+```text
+QuestActivity
+  -> Android window and lifecycle
+  -> QuestShellView placeholder
+  -> future renderer host
+
+Simulation
+  -> still pure Kotlin
+  -> still independent of Android
+```
+
+This gives the next loop a clean target: verify the current Meta XR and OpenXR Android setup before installing real headset plumbing. The shell is now ready to host that work without tempting the simulation to learn about Android.

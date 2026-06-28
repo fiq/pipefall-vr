@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Pressure</string>
-    <string name="placeholder_status">Pressure scaffold ready</string>
+    <string name="shell_title">Pressure Quest Shell</string>
+    <string name="shell_status">Renderer not attached yet</string>
 </resources>
