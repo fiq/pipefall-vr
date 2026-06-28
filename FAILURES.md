@@ -6,7 +6,7 @@ This file records build, test, device, design, and process failures encountered 
 
 - Meta XR SDK/OpenXR Android setup has not yet been verified against current official Meta documentation.
 - No Quest device run has been performed.
-- Foundational board, module catalog, and rotation tests exist, but collision, pressure, support, failure, and full simulation tests do not exist yet.
+- Foundational board, module catalog, rotation, and collision tests exist, but water, pressure, support, failure, and full simulation tests do not exist yet.
 
 ## Failure Log
 
@@ -41,6 +41,14 @@ This file records build, test, device, design, and process failures encountered 
 - Verification: `nix develop --command bash -lc 'scripts/agent_check.sh && gradle --no-daemon lintDebug test assembleDebug'` passed.
 - Device: Quest run not attempted in this loop.
 
+### 2026-06-28 - Engineering Module Catalog
+
+- Context: Added named engineering module definitions and deterministic module generator.
+- Added: Module catalog includes concrete slab, reinforced beam, short pillar, buttress, corner retaining section, drain block, spillway, reinforcement cage, pressure relief chamber, and inspection shaft.
+- Added: Module catalog tests cover required ordering, connected cell counts, slab shape, drain center material/function, and seeded deterministic generation.
+- Verification: `nix develop --command bash -lc 'scripts/agent_check.sh && gradle --no-daemon lintDebug test assembleDebug'` passed.
+- Device: Quest run not attempted in this loop.
+
 ### 2026-06-28 - Module Rotation
 
 - Context: Added deterministic clockwise module rotation and focused rotation tests.
@@ -48,10 +56,11 @@ This file records build, test, device, design, and process failures encountered 
 - Verification: `nix develop --command bash -lc 'scripts/agent_check.sh && gradle --no-daemon lintDebug test assembleDebug'` passed.
 - Device: Quest run not attempted in this loop.
 
-### 2026-06-28 - Engineering Module Catalog
+### 2026-06-28 - Collision And Lock Rules
 
-- Context: Added named engineering module definitions and deterministic module generator.
-- Added: Module catalog includes concrete slab, reinforced beam, short pillar, buttress, corner retaining section, drain block, spillway, reinforcement cage, pressure relief chamber, and inspection shaft.
-- Added: Module catalog tests cover required ordering, connected cell counts, slab shape, drain center material/function, and seeded deterministic generation.
-- Verification: `nix develop --command bash -lc 'scripts/agent_check.sh && gradle --no-daemon lintDebug test assembleDebug'` passed.
+- Context: Added board-level module collision checks and lock rules.
+- Added: Collision tests cover empty placement, board bounds, locked-cell overlap, immutable locking, bond recalculation, and lock rejection.
+- Added: SRP/code-smell guardrails to `ARCHITECTURE.md`, `AGENTS.md`, and `scripts/agent_check.sh`.
+- Added: `scripts/pressure_check.sh` and `skills/pressure-ralph/SKILL.md` to reduce repeated loop instructions.
+- Verification: `nix develop --command scripts/pressure_check.sh` passed.
 - Device: Quest run not attempted in this loop.

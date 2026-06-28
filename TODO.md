@@ -28,14 +28,17 @@ For every Ralph loop:
 - [x] Add lightweight agentic/static check harness and testing trophy CI command.
 - [x] Add engineering module definitions and deterministic module generator.
 - [x] Add module rotation tests.
+- [x] Add board collision and lock rules.
+- [x] Add collision tests.
+- [x] Add SRP and code-smell guardrails for future feature loops.
+- [x] Add repo-local Pressure Ralph skill and compact validation script.
 
 ## Next
 
-- [ ] Add board collision and lock rules.
+- [ ] Add deterministic water height update.
 
 ## Backlog
 
-- [ ] Add collision tests.
 - [ ] Add deterministic water height update.
 - [ ] Add pressure system and pressure tests.
 - [ ] Add support system and support tests.

@@ -35,4 +35,4 @@ jobs:
         run: scripts/agent_check.sh
 
       - name: Build
-        run: ./gradlew --no-daemon lintDebug test assembleDebug
+        run: scripts/pressure_check.sh

@@ -35,6 +35,26 @@ class Board private constructor(
         return Board(width, height, lockedCells + cells)
     }
 
+    fun positionedCells(module: Module, origin: GridPosition): Map<GridPosition, Cell> =
+        module.cells.associate {
+            it.offset.translated(origin.x, origin.y) to it.cell
+        }
+
+    fun collides(module: Module, origin: GridPosition): Boolean =
+        positionedCells(module, origin).keys.any { position ->
+            !isInBounds(position) || position in lockedCells
+        }
+
+    fun canPlace(module: Module, origin: GridPosition): Boolean =
+        !collides(module, origin)
+
+    fun lock(module: Module, origin: GridPosition): Board {
+        require(canPlace(module, origin)) {
+            "module ${module.type.displayName} collides at origin $origin"
+        }
+        return placeAll(positionedCells(module, origin)).withRecalculatedBonds()
+    }
+
     fun remove(position: GridPosition): Board {
         require(isInBounds(position)) { "position $position is out of bounds" }
         return if (position in lockedCells) {

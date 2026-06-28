@@ -20,6 +20,16 @@ Then implement exactly one TODO item, build, fix compile errors, run tests, fix 
 - Make every simulation rule testable with plain JUnit.
 - Keep work increments small enough for one Ralph loop.
 
+## SRP And Code Smell Guardrails
+
+- Every production type should have one clear reason to change.
+- Systems should own one rule family: pressure, support, failure, collision, input, or rendering.
+- Do not hide gameplay decisions inside rendering or Android lifecycle code.
+- Do not create manager/god classes that own unrelated rules.
+- Prefer small immutable value types for simulation state.
+- If a file grows because it is doing more than one job, split it before adding the next behavior.
+- Add tests at the same level as the rule: unit tests for deterministic simulation rules, lint/static checks for boundaries, device tests for Quest behavior.
+
 ## Project Layout
 
 Target Android project layout:

@@ -4,4 +4,4 @@ WORKDIR /workspace
 
 COPY . .
 
-RUN ./gradlew --no-daemon test assembleDebug
+RUN scripts/pressure_check.sh

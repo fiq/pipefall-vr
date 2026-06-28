@@ -42,4 +42,21 @@ if rg -n "(SECRET|TOKEN|PASSWORD|PRIVATE|BEGIN [A-Z ]*KEY|sdk\\.dir|/home/raf)" 
   exit 1
 fi
 
+check_kotlin_file_size() {
+  local root="$1"
+  local max_lines="$2"
+
+  while IFS= read -r file; do
+    local lines
+    lines="$(wc -l < "$file")"
+    if [ "$lines" -gt "$max_lines" ]; then
+      echo "$file has $lines lines; split responsibilities before adding more behavior." >&2
+      exit 1
+    fi
+  done < <(rg --files "$root" -g '*.kt' 2>/dev/null || true)
+}
+
+check_kotlin_file_size "app/src/main/java" 220
+check_kotlin_file_size "app/src/test/java" 260
+
 echo "agent_check passed"

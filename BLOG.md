@@ -98,3 +98,23 @@ XX     XX
 ```
 
 The useful detail is preservation. A drain remains a drain after rotation. A full four clockwise turns returns every module to the original shape and cells. That sounds obvious, but obvious rules are exactly what the later pressure system needs: the player should blame a breach on a weak dam, not on mysterious geometry.
+
+## Loop 5: The Board Says No
+
+A puzzle game begins to exist when the board can refuse you.
+
+Until now, modules were clean little diagrams. This loop gave them consequences. The board can now ask whether a module at an origin fits, whether it leaves the 12 by 20 construction area, whether it overlaps locked infrastructure, and whether it can be locked into the dam.
+
+```text
+empty space      locked cell      collision
+
+....             ..#..            ..#..
+.XXX  ok         .XXX  no         .XXX
+....             .....            .....
+```
+
+Locking is still deterministic and non-physical. A module becomes board cells, the original board remains unchanged, and touching faces become bonds. That bond recalculation is small, but it is the first bridge from "placing pieces" to "building structure."
+
+This loop also tightened the agent harness around code quality. The project now states the SRP rule out loud: one reason to change per production type, one rule family per system, no god classes quietly swallowing the prototype. The harness enforces a coarse Kotlin file-size limit so the codebase starts complaining before a class becomes a dumping ground.
+
+There is also a new shortcut for future loops: `scripts/pressure_check.sh`. It runs the agent guard, Android lint, unit tests, and debug assembly. The repo-local `pressure-ralph` skill captures the repeatable workflow so future agents do not need the whole backstory before doing the next small piece of dam engineering.

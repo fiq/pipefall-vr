@@ -46,7 +46,7 @@ Android SDK location should come from a normal local Android setup or ignored `l
 On NixOS, use the flake:
 
 ```sh
-nix develop --command bash -lc 'scripts/agent_check.sh && gradle --no-daemon lintDebug test assembleDebug'
+nix develop --command scripts/pressure_check.sh
 ```
 
 An optional Android build container is available:
@@ -81,3 +81,5 @@ Use a testing trophy shape:
 - Unit tests carry most simulation confidence.
 - Build/lint checks prove Android packaging remains healthy.
 - Quest device runs validate VR integration when that layer exists.
+
+For repeated agent work, see [skills/pressure-ralph/SKILL.md](skills/pressure-ralph/SKILL.md).
