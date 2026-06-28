@@ -1,0 +1,10 @@
+<resources>
+    <style name="Theme.Pressure" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowBackground">@color/pressure_background</item>
+        <item name="android:colorAccent">@color/pressure_concrete</item>
+    </style>
+</resources>

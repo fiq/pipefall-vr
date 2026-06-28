@@ -9,7 +9,7 @@ Every implementation task must start by reading:
 3. `TODO.md`
 4. `FAILURES.md`
 
-Then implement exactly one TODO item, build, fix compile errors, run tests, fix test failures, update `TODO.md`, update `FAILURES.md`, commit, and stop.
+Then implement exactly one TODO item, build, fix compile errors, run tests, fix test failures, update `TODO.md`, update `FAILURES.md`, update `BLOG.md`, commit, and stop.
 
 ## Design Goals
 
@@ -176,6 +176,8 @@ Avoid:
 
 Quest-specific code should stay in the Android app and renderer layers. Meta XR SDK, OpenXR session setup, controller polling, and OpenGL ES surface handling must not leak into simulation.
 
+Prefer Meta SDKs for Quest-specific VR capabilities where they make sense, especially headset lifecycle, controller input, platform performance guidance, and compatibility with Meta's recommended project structure. Keep OpenXR/OpenGL boundaries explicit and do not use Meta APIs as a shortcut inside deterministic simulation logic.
+
 Before implementing Quest integration, verify current Meta XR SDK and OpenXR Android setup against official Meta documentation.
 
 ## Build And Test Expectations
@@ -187,4 +189,3 @@ Each loop should run the narrowest useful verification:
 - Add focused tests before or with risky simulation changes.
 
 If a command cannot run because the project is not scaffolded yet, record that in `FAILURES.md`.
-

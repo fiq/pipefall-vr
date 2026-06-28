@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Pressure</string>
+    <string name="placeholder_status">Pressure scaffold ready</string>
+</resources>

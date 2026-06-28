@@ -15,20 +15,22 @@ For every Ralph loop:
 9. Fix test failures.
 10. Update `TODO.md`.
 11. Update `FAILURES.md`.
-12. Commit.
-13. Stop.
+12. Update `BLOG.md`.
+13. Commit.
+14. Stop.
 
 ## Done
 
 - [x] Bootstrap `GAME_SPEC.md`, `ARCHITECTURE.md`, `TODO.md`, and `FAILURES.md`.
+- [x] Scaffold minimal Kotlin Android Gradle project for Quest-targeted app builds.
+- [x] Add `README.md`, `AGENTS.md`, and `BLOG.md` repo guardrails.
 
 ## Next
 
-- [ ] Scaffold minimal Kotlin Android Gradle project for Quest-targeted app builds.
+- [ ] Add pure Kotlin simulation package with board, cell, material, and grid position types.
 
 ## Backlog
 
-- [ ] Add pure Kotlin simulation package with board, cell, material, and grid position types.
 - [ ] Add engineering module definitions and deterministic module generator.
 - [ ] Add module rotation tests.
 - [ ] Add board collision and lock rules.
@@ -53,4 +55,3 @@ For every Ralph loop:
 - [ ] Add debug overlay for FPS, water height, max pressure, cracked count, failed count, support heatmap, and pressure heatmap.
 - [ ] Add game over state rendering.
 - [ ] Run on Meta Quest and record device notes.
-
