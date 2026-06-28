@@ -235,3 +235,18 @@ view     -> Android host only
 ```
 
 The next loop can now start on renderer setup with the confidence that the platform-facing envelope is already doing the right boring things.
+
+## Loop 14: Clearing A Frame
+
+The renderer skeleton is intentionally plain, but it finally establishes the OpenGL side of the boundary. `QuestRenderView` now owns the `GLSurfaceView`, `OpenXRRenderer` clears the frame and records viewport state, and the board/input helpers exist as separate renderer types rather than being stuffed into the activity.
+
+That separation matters more than the visuals at this stage. The activity hosts the app shell. The renderer owns the GL surface. Simulation still stays out of Android code. This is the first loop that gives the project a concrete place to hang the actual board, cells, water plane, and controller input without blurring the layers.
+
+```text
+Activity -> window + lifecycle
+Render   -> GL surface + clear frame
+Board    -> future draw path
+Input    -> future controller mapping
+```
+
+The frame is still mostly empty, but the project now has the structural spine needed for the next set of rendering loops.

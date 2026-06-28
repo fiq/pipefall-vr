@@ -8,23 +8,29 @@ import android.view.Window
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.view.WindowManager
+import com.pipefall.pressure.renderer.QuestRenderView
 
 class QuestActivity : Activity() {
-    private lateinit var shellView: QuestShellView
+    private lateinit var renderView: QuestRenderView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         requestWindowFeature(Window.FEATURE_NO_TITLE)
-        shellView = QuestShellView(this)
+        renderView = QuestRenderView(this)
         configureFullscreen()
-        setContentView(shellView)
+        setContentView(renderView)
     }
 
     override fun onResume() {
         super.onResume()
         configureFullscreen()
-        shellView.setStatus(getString(R.string.shell_status))
+        renderView.onResume()
+    }
+
+    override fun onPause() {
+        renderView.onPause()
+        super.onPause()
     }
 
     @Suppress("DEPRECATION")

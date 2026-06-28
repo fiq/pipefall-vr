@@ -40,14 +40,14 @@ For every Ralph loop:
 - [x] Add simulation step orchestration.
 - [x] Add simulation tests for spawn, move, rotate, hard drop, lock, water, pressure, support, crack, failure, cascade, and game over.
 - [x] Add Android Quest activity shell.
+- [x] Add OpenGL ES 3.2 renderer skeleton.
 
 ## Next
 
-- [ ] Add OpenGL ES 3.2 renderer skeleton.
+- [ ] Render fixed floating construction board.
 
 ## Backlog
 
-- [ ] Add OpenGL ES 3.2 renderer skeleton.
 - [ ] Render fixed floating construction board.
 - [ ] Render locked board cells as simple 3D geometry.
 - [ ] Render active descending engineering module.

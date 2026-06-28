@@ -13,11 +13,12 @@ class QuestShellView(context: Context) : LinearLayout(context) {
     private val statusView = TextView(context)
 
     init {
-        setBackgroundColor(Color.rgb(18, 22, 26))
+        setBackgroundColor(Color.TRANSPARENT)
         orientation = VERTICAL
-        gravity = Gravity.CENTER
+        gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
         isFocusable = true
         isFocusableInTouchMode = true
+        setPadding(dp(24), dp(24), dp(24), dp(24))
 
         titleView.apply {
             setTextColor(Color.rgb(224, 228, 230))

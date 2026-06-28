@@ -6,7 +6,7 @@ This file records build, test, device, design, and process failures encountered 
 
 - Meta XR SDK/OpenXR runtime integration has not yet been added.
 - No Quest device run has been performed.
-- Foundational board, module catalog, rotation, collision, water, pressure, support, failure, simulation tests, and Android activity shell exist, but renderer integration and device validation are still pending.
+- Foundational board, module catalog, rotation, collision, water, pressure, support, failure, simulation tests, Android activity shell, and renderer skeleton exist, but device validation is still pending.
 
 ## Failure Log
 
@@ -118,5 +118,12 @@ This file records build, test, device, design, and process failures encountered 
 
 - Context: Verified the Android shell against the current Meta Horizon OS manifest guidance for Quest release builds.
 - Added: `AndroidManifest.xml` now includes `android.hardware.vr.headtracking` with version `1`, `installLocation="auto"`, `excludeFromRecents="true"`, `com.oculus.intent.category.VR`, and `com.oculus.supportedDevices` metadata. `app/build.gradle.kts` now targets SDK 34 while still compiling against SDK 35.
+- Verification: `nix develop --command scripts/pressure_check.sh` passed.
+- Device: Quest run not attempted in this loop.
+
+### 2026-06-28 - OpenGL ES Renderer Skeleton
+
+- Context: Added a minimal OpenGL ES 3.2 renderer host with an overlay shell.
+- Added: `QuestRenderView` now owns a `GLSurfaceView`, `OpenXRRenderer` clears the frame and tracks viewport state, and lightweight `BoardRenderer`, `MeshFactory`, and `InputController` classes establish the renderer boundary.
 - Verification: `nix develop --command scripts/pressure_check.sh` passed.
 - Device: Quest run not attempted in this loop.
