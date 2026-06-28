@@ -189,3 +189,16 @@ Step      -> water advances, then failure resolution runs
 ```
 
 This is the kind of plumbing that pays rent later. It gives the next loop a place to add spawn, move, rotate, and hard-drop behavior without turning the simulation package into a kitchen sink.
+
+## Loop 11: The Module Gets A Body
+
+The simulation stopped being just a set of board-level rules and became a real turn state. There is now an active module, a spawn index, and deterministic commands for spawn, move, rotate, and hard drop. That means the simulation can describe what the player is currently handling instead of only what is already locked into the dam.
+
+```text
+spawn -> center the next prefab at the top
+move  -> shift the active module if the board allows it
+rotate -> rotate in place if the rotated shape still fits
+drop  -> fall until the last legal row, then lock
+```
+
+This is the first state model that starts to feel like a game loop rather than just a physics substitute. The board still says no, water still rises on schedule, and failure still resolves deterministically, but now the player-facing piece has a concrete identity all the way through the simulation layer.

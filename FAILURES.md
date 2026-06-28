@@ -6,7 +6,7 @@ This file records build, test, device, design, and process failures encountered 
 
 - Meta XR SDK/OpenXR Android setup has not yet been verified against current official Meta documentation.
 - No Quest device run has been performed.
-- Foundational board, module catalog, rotation, collision, water, pressure, support, and failure tests exist, but full simulation tests do not exist yet.
+- Foundational board, module catalog, rotation, collision, water, pressure, support, failure, and simulation tests exist, but the Android Quest activity shell and device validation are still pending.
 
 ## Failure Log
 
@@ -97,5 +97,12 @@ This file records build, test, device, design, and process failures encountered 
 
 - Context: Added an immutable `SimulationState`, a command model, and a pure orchestration layer that routes `TickWater` and `Step` through water and failure systems.
 - Added: Simulation tests cover stepping water into failure resolution, tick-only water advances, and top-of-board game over detection.
+- Verification: `nix develop --command scripts/pressure_check.sh` passed.
+- Device: Quest run not attempted in this loop.
+
+### 2026-06-28 - Simulation Command Surface
+
+- Context: Added an active-module simulation model with deterministic spawn, left/right movement, rotation, and hard-drop locking.
+- Added: Simulation tests cover spawn placement, movement and rotation, hard-drop locking, water-only ticks, failure cascades, and game over at the water top.
 - Verification: `nix develop --command scripts/pressure_check.sh` passed.
 - Device: Quest run not attempted in this loop.
