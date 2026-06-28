@@ -46,7 +46,7 @@ Android SDK location should come from a normal local Android setup or ignored `l
 On NixOS, use the flake:
 
 ```sh
-nix develop --command gradle --no-daemon test assembleDebug
+nix develop --command bash -lc 'scripts/agent_check.sh && gradle --no-daemon lintDebug test assembleDebug'
 ```
 
 An optional Android build container is available:
@@ -72,3 +72,12 @@ Do not use Godot, Unity, Unreal, libGDX, or Flutter.
 ## Safety
 
 Do not commit secrets, keys, tokens, local SDK paths, build outputs, APKs, or generated caches.
+
+## Testing Trophy
+
+Use a testing trophy shape:
+
+- Agent/static checks catch wrong boundaries and forbidden clone-like choices.
+- Unit tests carry most simulation confidence.
+- Build/lint checks prove Android packaging remains healthy.
+- Quest device runs validate VR integration when that layer exists.

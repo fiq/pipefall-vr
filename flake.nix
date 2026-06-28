@@ -42,7 +42,7 @@
           shellHook = ''
             echo "Pressure Android dev shell"
             echo "ANDROID_HOME=$ANDROID_HOME"
-            echo "Run: gradle --no-daemon test assembleDebug"
+            echo "Run: scripts/agent_check.sh && gradle --no-daemon lintDebug test assembleDebug"
           '';
         };
       });

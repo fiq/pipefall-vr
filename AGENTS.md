@@ -28,8 +28,15 @@ Then implement exactly one TODO item, build, run tests, update `TODO.md`, update
 - Add polish only when it directly helps test the core loop.
 - Do not continue to the next gameplay feature after finishing the current TODO.
 - Use subagents for bounded sidecar work when it helps finish the loop faster without splitting one file or responsibility across multiple agents.
-- Prefer the Nix flake on NixOS: `nix develop --command gradle --no-daemon test assembleDebug`.
+- Prefer the Nix flake on NixOS: `nix develop --command bash -lc 'scripts/agent_check.sh && gradle --no-daemon lintDebug test assembleDebug'`.
 - Use the build container when it helps reproduce CI locally, but do not let container polish delay a Ralph loop.
+
+## Testing Trophy
+
+- Agent/static checks: run `scripts/agent_check.sh` to catch boundary violations, local paths, sensitive content, and forbidden Tetris-like implementation drift.
+- Unit tests: put most simulation confidence here because the simulation is deterministic and pure Kotlin.
+- Build/lint: run Android lint and `assembleDebug` to prove packaging health.
+- Device checks: use Quest runs for VR behavior once OpenXR/Meta SDK integration exists.
 
 ## Secrets And Local Files
 

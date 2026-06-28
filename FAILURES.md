@@ -6,7 +6,7 @@ This file records build, test, device, design, and process failures encountered 
 
 - Meta XR SDK/OpenXR Android setup has not yet been verified against current official Meta documentation.
 - No Quest device run has been performed.
-- The scaffold builds, but there are no meaningful simulation tests yet.
+- Foundational board tests exist, but module, pressure, support, failure, and full simulation tests do not exist yet.
 
 ## Failure Log
 
@@ -31,4 +31,12 @@ This file records build, test, device, design, and process failures encountered 
 - Resolution: Removed the local shim from the verification path and pinned Android build tools to 35.0.1.
 - Verification: `nix develop --command gradle --no-daemon test assembleDebug` passed. Unit test tasks were `NO-SOURCE` because simulation tests do not exist yet.
 - Added: Nix flake, optional Android build container recipe, and GitHub Actions Android pipeline.
+- Device: Quest run not attempted in this loop.
+
+### 2026-06-28 - Simulation Foundations
+
+- Context: Added pure Kotlin `simulation` types for `Board`, `Cell`, `Material`, structural state, cell function, and grid position.
+- Added: Basic board unit tests covering dimensions, immutable placement, bounds checks, removal, and deterministic face bonds.
+- Added: `scripts/agent_check.sh` to catch missing docs, whitespace issues, simulation API boundary violations, forbidden clone-like source language, and obvious local/sensitive content.
+- Verification: `nix develop --command bash -lc 'scripts/agent_check.sh && gradle --no-daemon lintDebug test assembleDebug'` passed.
 - Device: Quest run not attempted in this loop.

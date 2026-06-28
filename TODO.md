@@ -24,14 +24,15 @@ For every Ralph loop:
 - [x] Bootstrap `GAME_SPEC.md`, `ARCHITECTURE.md`, `TODO.md`, and `FAILURES.md`.
 - [x] Scaffold minimal Kotlin Android Gradle project for Quest-targeted app builds.
 - [x] Add `README.md`, `AGENTS.md`, and `BLOG.md` repo guardrails.
+- [x] Add pure Kotlin simulation package with board, cell, material, and grid position types.
+- [x] Add lightweight agentic/static check harness and testing trophy CI command.
 
 ## Next
 
-- [ ] Add pure Kotlin simulation package with board, cell, material, and grid position types.
+- [ ] Add engineering module definitions and deterministic module generator.
 
 ## Backlog
 
-- [ ] Add engineering module definitions and deterministic module generator.
 - [ ] Add module rotation tests.
 - [ ] Add board collision and lock rules.
 - [ ] Add collision tests.
