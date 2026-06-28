@@ -3,6 +3,7 @@ package com.pipefall.pressure.renderer
 import android.opengl.GLES32
 import android.opengl.Matrix
 import com.pipefall.pressure.simulation.Board
+import com.pipefall.pressure.simulation.Material
 import com.pipefall.pressure.simulation.SimulationState
 
 class BoardRenderer(
@@ -10,6 +11,8 @@ class BoardRenderer(
 ) {
     private val boardDistanceMeters = 2.5f
     private val cellSizeMeters = 0.12f
+    private val cellDepthMeters = 0.06f
+    private val cellCenterOffsetMeters = cellDepthMeters / 2f
     private val surfaceColor = floatArrayOf(0.68f, 0.70f, 0.72f, 1f)
     private val gridColor = floatArrayOf(0.36f, 0.39f, 0.42f, 1f)
 
@@ -22,8 +25,11 @@ class BoardRenderer(
     private var cachedRows = -1
     private var surfaceMesh: GpuMesh? = null
     private var gridMesh: GpuMesh? = null
+    private var cellMesh: GpuMesh? = null
 
-    private val modelMatrix = FloatArray(16)
+    private val boardModelMatrix = FloatArray(16)
+    private val cellLocalMatrix = FloatArray(16)
+    private val cellModelMatrix = FloatArray(16)
     private val viewMatrix = FloatArray(16)
     private val projectionMatrix = FloatArray(16)
     private val viewModelMatrix = FloatArray(16)
@@ -48,15 +54,15 @@ class BoardRenderer(
 
         ensureMeshes(state.board)
 
-        Matrix.setIdentityM(modelMatrix, 0)
+        Matrix.setIdentityM(boardModelMatrix, 0)
         Matrix.setIdentityM(viewMatrix, 0)
         Matrix.setIdentityM(projectionMatrix, 0)
 
         Matrix.setLookAtM(viewMatrix, 0, 0f, 0f, 0f, 0f, 0f, -1f, 0f, 1f, 0f)
         Matrix.perspectiveM(projectionMatrix, 0, 42f, viewportWidth.toFloat() / viewportHeight.toFloat(), 0.1f, 10f)
-        Matrix.translateM(modelMatrix, 0, 0f, 0f, -boardDistanceMeters)
+        Matrix.translateM(boardModelMatrix, 0, 0f, 0f, -boardDistanceMeters)
 
-        Matrix.multiplyMM(viewModelMatrix, 0, viewMatrix, 0, modelMatrix, 0)
+        Matrix.multiplyMM(viewModelMatrix, 0, viewMatrix, 0, boardModelMatrix, 0)
         Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, viewModelMatrix, 0)
 
         val shader = program ?: return
@@ -66,6 +72,7 @@ class BoardRenderer(
 
         drawMesh(surfaceMesh, surfaceColor)
         drawMesh(gridMesh, gridColor)
+        drawLockedCells(state.board)
     }
 
     private fun ensureMeshes(board: Board) {
@@ -77,6 +84,7 @@ class BoardRenderer(
         cachedRows = board.height
         surfaceMesh = meshFactory.createBoardSurface(board.width, board.height, cellSizeMeters).toGpuMesh()
         gridMesh = meshFactory.createBoardGrid(board.width, board.height, cellSizeMeters).toGpuMesh()
+        cellMesh = meshFactory.createUnitCube().toGpuMesh()
     }
 
     private fun drawMesh(mesh: GpuMesh?, color: FloatArray) {
@@ -89,6 +97,37 @@ class BoardRenderer(
         GLES32.glDrawArrays(currentMesh.drawMode, 0, currentMesh.vertexCount)
         GLES32.glDisableVertexAttribArray(positionHandle)
     }
+
+    private fun drawLockedCells(board: Board) {
+        val currentCellMesh = cellMesh ?: return
+        val halfWidth = board.width * cellSizeMeters / 2f
+        val halfHeight = board.height * cellSizeMeters / 2f
+
+        for (position in board.occupiedPositions()) {
+            val cell = board[position] ?: continue
+            val color = colorFor(cell.material)
+            val x = -halfWidth + cellSizeMeters * (position.x + 0.5f)
+            val y = -halfHeight + cellSizeMeters * (position.y + 0.5f)
+
+            Matrix.setIdentityM(cellLocalMatrix, 0)
+            Matrix.translateM(cellLocalMatrix, 0, x, y, cellCenterOffsetMeters)
+            Matrix.scaleM(cellLocalMatrix, 0, cellSizeMeters, cellSizeMeters, cellDepthMeters)
+            Matrix.multiplyMM(cellModelMatrix, 0, boardModelMatrix, 0, cellLocalMatrix, 0)
+            Matrix.multiplyMM(viewModelMatrix, 0, viewMatrix, 0, cellModelMatrix, 0)
+            Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, viewModelMatrix, 0)
+            drawMesh(currentCellMesh, color)
+        }
+    }
+
+    private fun colorFor(material: Material): FloatArray =
+        when (material) {
+            Material.CONCRETE -> floatArrayOf(0.76f, 0.77f, 0.79f, 1f)
+            Material.STEEL -> floatArrayOf(0.48f, 0.52f, 0.56f, 1f)
+            Material.DRAIN -> floatArrayOf(0.28f, 0.42f, 0.66f, 1f)
+            Material.SPILLWAY -> floatArrayOf(0.67f, 0.61f, 0.46f, 1f)
+            Material.REINFORCEMENT -> floatArrayOf(0.67f, 0.49f, 0.28f, 1f)
+            Material.SERVICE_SHAFT -> floatArrayOf(0.35f, 0.34f, 0.32f, 1f)
+        }
 
     private companion object {
         const val VERTEX_SHADER =

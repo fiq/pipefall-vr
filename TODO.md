@@ -42,10 +42,11 @@ For every Ralph loop:
 - [x] Add Android Quest activity shell.
 - [x] Add OpenGL ES 3.2 renderer skeleton.
 - [x] Render fixed floating construction board.
+- [x] Render locked board cells as simple 3D geometry.
 
 ## Next
 
-- [ ] Render locked board cells as simple 3D geometry.
+- [ ] Render active descending engineering module.
 
 ## Backlog
 

@@ -20,6 +20,50 @@ data class Mesh(
 class MeshFactory {
     private val gridDepthOffset = 0.001f
 
+    fun createUnitCube(): Mesh =
+        Mesh(
+            drawMode = MeshDrawMode.TRIANGLES,
+            vertices =
+                floatArrayOf(
+                    -0.5f, -0.5f, 0.5f,
+                    0.5f, -0.5f, 0.5f,
+                    -0.5f, 0.5f, 0.5f,
+                    -0.5f, 0.5f, 0.5f,
+                    0.5f, -0.5f, 0.5f,
+                    0.5f, 0.5f, 0.5f,
+                    -0.5f, -0.5f, -0.5f,
+                    -0.5f, 0.5f, -0.5f,
+                    0.5f, -0.5f, -0.5f,
+                    -0.5f, 0.5f, -0.5f,
+                    0.5f, 0.5f, -0.5f,
+                    0.5f, -0.5f, -0.5f,
+                    -0.5f, -0.5f, -0.5f,
+                    -0.5f, -0.5f, 0.5f,
+                    -0.5f, 0.5f, -0.5f,
+                    -0.5f, -0.5f, 0.5f,
+                    -0.5f, 0.5f, 0.5f,
+                    -0.5f, 0.5f, -0.5f,
+                    0.5f, -0.5f, -0.5f,
+                    0.5f, 0.5f, -0.5f,
+                    0.5f, -0.5f, 0.5f,
+                    0.5f, -0.5f, 0.5f,
+                    0.5f, 0.5f, -0.5f,
+                    0.5f, 0.5f, 0.5f,
+                    -0.5f, 0.5f, -0.5f,
+                    -0.5f, 0.5f, 0.5f,
+                    0.5f, 0.5f, -0.5f,
+                    -0.5f, 0.5f, 0.5f,
+                    0.5f, 0.5f, 0.5f,
+                    0.5f, 0.5f, -0.5f,
+                    -0.5f, -0.5f, -0.5f,
+                    0.5f, -0.5f, -0.5f,
+                    -0.5f, -0.5f, 0.5f,
+                    -0.5f, -0.5f, 0.5f,
+                    0.5f, -0.5f, -0.5f,
+                    0.5f, -0.5f, 0.5f,
+                ),
+        )
+
     fun createBoardSurface(
         columns: Int,
         rows: Int,

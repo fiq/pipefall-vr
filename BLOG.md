@@ -268,3 +268,17 @@ grid cells waiting for modules
 ```
 
 The board is still empty, which is the right kind of empty. It now looks like the place where a dam will be built, not just the place where a dam could have been.
+
+## Loop 16: The Board Takes Load
+
+The next step is where the board stops being a sign and starts being a structure. Locked cells now render as simple 3D prisms, with material-based colors and a small extrusion off the board plane so they read as blocks rather than flat decals.
+
+That model decision matters because it keeps the dam legible at a glance. Concrete can look like concrete, steel can look like steel, and the board surface stays visually separate from the actual load-bearing geometry. The renderer still owns the draw path, but the board data now has visible volume instead of only coordinates.
+
+```text
+surface -> background plane
+grid    -> layout reference
+cells   -> actual dam mass
+```
+
+The next loop can now focus on the active descending module without having to invent the idea of a built dam first.

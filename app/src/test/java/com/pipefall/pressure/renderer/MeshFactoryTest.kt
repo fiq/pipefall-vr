@@ -31,6 +31,16 @@ class MeshFactoryTest {
         assertTrue(mesh.vertices.contains(1.2f))
     }
 
+    @Test
+    fun unitCubeUsesTrianglesForSixFaces() {
+        val mesh = MeshFactory().createUnitCube()
+
+        assertEquals(MeshDrawMode.TRIANGLES, mesh.drawMode)
+        assertEquals(36, mesh.vertexCount)
+        assertEquals(-0.5f, mesh.vertices[0], 0.0001f)
+        assertEquals(0.5f, mesh.vertices[2], 0.0001f)
+    }
+
     private fun FloatArray.contains(value: Float): Boolean =
         any { kotlin.math.abs(it - value) < 0.0001f }
 }
