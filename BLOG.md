@@ -163,3 +163,16 @@ effectiveStrength =
 ```
 
 That keeps the simulation easy to reason about in tests and leaves pressure and failure free to stay separate. The model is still intentionally simple, but it now has enough structure to make future cracking and collapse decisions feel like dam behavior instead of just row math.
+
+## Loop 9: Failure Becomes Deterministic
+
+The failure model now closes the core structural loop. A cell cracks when pressure exceeds effective strength, fails when pressure exceeds one and a half times effective strength, and gets removed when it fails. After each removal, the board is recomputed and the pressure/support snapshot is evaluated again until the cascade stops.
+
+That is the important model change: failure is not a visual effect and not an animation state. It is a deterministic simulation transition on `Cell.state` plus board removal, which keeps the rule testable and makes the eventual simulation step orchestration straightforward.
+
+```text
+pressure > strength          -> cracked
+pressure > strength * 1.5    -> failed and removed
+```
+
+This loop is the first one where the board can now meaningfully degrade under load. That is still simple, but it is finally dam logic instead of just dam accounting.

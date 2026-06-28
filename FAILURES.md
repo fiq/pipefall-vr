@@ -6,7 +6,7 @@ This file records build, test, device, design, and process failures encountered 
 
 - Meta XR SDK/OpenXR Android setup has not yet been verified against current official Meta documentation.
 - No Quest device run has been performed.
-- Foundational board, module catalog, rotation, collision, water, pressure, and support tests exist, but failure and full simulation tests do not exist yet.
+- Foundational board, module catalog, rotation, collision, water, pressure, support, and failure tests exist, but full simulation tests do not exist yet.
 
 ## Failure Log
 
@@ -83,5 +83,12 @@ This file records build, test, device, design, and process failures encountered 
 
 - Context: Added a pure Kotlin support system that derives effective strength from base strength, bonds, same-material contacts, reinforcement adjacency, and exposed faces.
 - Added: Support tests cover isolated-cell penalties, bonded support growth, snapshot calculation for occupied cells, and invalid input rejection.
+- Verification: `nix develop --command scripts/pressure_check.sh` passed.
+- Device: Quest run not attempted in this loop.
+
+### 2026-06-28 - Failure System
+
+- Context: Added a pure Kotlin failure system that marks cracked cells, removes failed cells, and cascades until the board stabilizes.
+- Added: Failure tests cover cracking, removal at the fail threshold, cascade recomputation after a removal, and invalid input rejection.
 - Verification: `nix develop --command scripts/pressure_check.sh` passed.
 - Device: Quest run not attempted in this loop.

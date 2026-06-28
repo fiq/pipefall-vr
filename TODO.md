@@ -35,14 +35,14 @@ For every Ralph loop:
 - [x] Add deterministic water height update.
 - [x] Add pressure system and pressure tests.
 - [x] Add support system and support tests.
+- [x] Add failure system with cascade resolution.
 
 ## Next
 
-- [ ] Add failure system with cascade resolution.
+- [ ] Add simulation step orchestration.
 
 ## Backlog
 
-- [ ] Add failure system with cascade resolution.
 - [ ] Add failure tests.
 - [ ] Add simulation step orchestration.
 - [ ] Add simulation tests for spawn, move, rotate, hard drop, lock, water, pressure, support, crack, failure, cascade, and game over.
