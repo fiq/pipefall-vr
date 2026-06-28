@@ -176,3 +176,16 @@ pressure > strength * 1.5    -> failed and removed
 ```
 
 This loop is the first one where the board can now meaningfully degrade under load. That is still simple, but it is finally dam logic instead of just dam accounting.
+
+## Loop 10: Orchestration Finds Its Shape
+
+The simulation layer now has a clean seam between state and action. `SimulationState` is the immutable snapshot, while `Simulation` is the command router that decides whether a tick only advances water or runs the full step pipeline.
+
+That model change matters because it keeps orchestration out of the rules themselves. Water still belongs to `WaterSystem`. Strength still belongs to `SupportSystem`. Collapse still belongs to `FailureSystem`. The new layer just decides when those systems run and in what order.
+
+```text
+TickWater -> water advances, board stays intact
+Step      -> water advances, then failure resolution runs
+```
+
+This is the kind of plumbing that pays rent later. It gives the next loop a place to add spawn, move, rotate, and hard-drop behavior without turning the simulation package into a kitchen sink.

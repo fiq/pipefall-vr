@@ -92,3 +92,10 @@ This file records build, test, device, design, and process failures encountered 
 - Added: Failure tests cover cracking, removal at the fail threshold, cascade recomputation after a removal, and invalid input rejection.
 - Verification: `nix develop --command scripts/pressure_check.sh` passed.
 - Device: Quest run not attempted in this loop.
+
+### 2026-06-28 - Simulation Orchestration
+
+- Context: Added an immutable `SimulationState`, a command model, and a pure orchestration layer that routes `TickWater` and `Step` through water and failure systems.
+- Added: Simulation tests cover stepping water into failure resolution, tick-only water advances, and top-of-board game over detection.
+- Verification: `nix develop --command scripts/pressure_check.sh` passed.
+- Device: Quest run not attempted in this loop.
