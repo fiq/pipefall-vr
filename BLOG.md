@@ -132,3 +132,17 @@ remainder:  0 1 2 0 1 2 0 1
 ```
 
 That is intentionally austere, because the point is not realism. The point is to create a repeatable rising threat that future pressure rules can read without asking Android time APIs, render timing, or headset state what happened. The water system now behaves like the rest of the simulation should behave: given the same state and the same tick count, it produces the same answer every time.
+
+## Loop 7: Pressure Becomes Measurable
+
+Pressure in this prototype is deliberately simple. A cell experiences pressure equal to how far it sits below the waterline, and nothing else for now.
+
+That gives the next systems something concrete to compare against without dragging in fake fluid behavior or timing side effects. The pressure system can answer for a single cell or snapshot the occupied board, which makes it a clean seam for the later support and failure loops.
+
+```text
+waterHeight = 7
+cellY       = 2
+pressure    = 5
+```
+
+This is still the right kind of boring. The game is supposed to be about whether the dam holds, not about whether the pressure math wants attention.

@@ -33,14 +33,14 @@ For every Ralph loop:
 - [x] Add SRP and code-smell guardrails for future feature loops.
 - [x] Add repo-local Pressure Ralph skill and compact validation script.
 - [x] Add deterministic water height update.
+- [x] Add pressure system and pressure tests.
 
 ## Next
 
-- [ ] Add pressure system and pressure tests.
+- [ ] Add support system and support tests.
 
 ## Backlog
 
-- [ ] Add pressure system and pressure tests.
 - [ ] Add support system and support tests.
 - [ ] Add failure system with cascade resolution.
 - [ ] Add failure tests.
