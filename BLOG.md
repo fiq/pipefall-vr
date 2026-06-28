@@ -146,3 +146,20 @@ pressure    = 5
 ```
 
 This is still the right kind of boring. The game is supposed to be about whether the dam holds, not about whether the pressure math wants attention.
+
+## Loop 8: Support Becomes Structural
+
+Pressure alone is not enough to tell the story of a dam. The next model change makes the structure itself matter.
+
+Support now computes an effective strength for each locked cell from five simple parts: the cell's base strength, how many faces are bonded, how many bonded neighbors share the same material, whether any bonded neighbor is reinforcement, and how many faces are exposed. The important decision is that reinforcement only boosts concrete, which keeps the rule aligned with the engineering fantasy instead of turning every material into a generic buff source.
+
+```text
+effectiveStrength =
+  baseStrength
+  + bondedNeighborCount * supportBonus
+  + sameMaterialBondCount * materialBonus
+  + concreteReinforcementBonus
+  - exposedFaceCount * exposedFacePenalty
+```
+
+That keeps the simulation easy to reason about in tests and leaves pressure and failure free to stay separate. The model is still intentionally simple, but it now has enough structure to make future cracking and collapse decisions feel like dam behavior instead of just row math.

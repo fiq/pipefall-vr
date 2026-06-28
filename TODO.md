@@ -34,14 +34,14 @@ For every Ralph loop:
 - [x] Add repo-local Pressure Ralph skill and compact validation script.
 - [x] Add deterministic water height update.
 - [x] Add pressure system and pressure tests.
+- [x] Add support system and support tests.
 
 ## Next
 
-- [ ] Add support system and support tests.
+- [ ] Add failure system with cascade resolution.
 
 ## Backlog
 
-- [ ] Add support system and support tests.
 - [ ] Add failure system with cascade resolution.
 - [ ] Add failure tests.
 - [ ] Add simulation step orchestration.
