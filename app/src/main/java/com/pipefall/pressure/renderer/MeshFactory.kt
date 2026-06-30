@@ -78,6 +78,20 @@ class MeshFactory {
                 ),
         )
 
+    fun createCrackLines(): Mesh =
+        Mesh(
+            drawMode = MeshDrawMode.LINES,
+            vertices =
+                floatArrayOf(
+                    -0.5f, -0.5f, 0.5f,
+                    0.5f, 0.5f, 0.5f,
+                    0.5f, -0.5f, 0.5f,
+                    -0.5f, 0.5f, 0.5f,
+                    -0.5f, 0f, 0.5f,
+                    0.5f, 0f, 0.5f,
+                ),
+        )
+
     fun createBoardSurface(
         columns: Int,
         rows: Int,

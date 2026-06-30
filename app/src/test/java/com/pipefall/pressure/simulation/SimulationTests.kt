@@ -107,4 +107,57 @@ class SimulationTests {
         assertTrue(next.gameOver)
         assertEquals(WaterState(height = 5, tickRemainder = 0), next.water)
     }
+
+    @Test
+    fun stepRecordsRecentlyFailedPositionsWhenCellsCollapse() {
+        val simulation = Simulation(
+            waterSystem = WaterSystem(ticksPerRise = 1, risePerStep = 16, maxHeight = 20),
+        )
+        val state = SimulationState(
+            board = Board.empty()
+                .place(GridPosition(0, 0), Cell(Material.CONCRETE))
+                .place(GridPosition(0, 1), Cell(Material.CONCRETE))
+                .withRecalculatedBonds(),
+        )
+
+        val next = simulation.step(state)
+
+        assertTrue(next.board.cells().isEmpty())
+        assertEquals(setOf(GridPosition(0, 0), GridPosition(0, 1)), next.recentlyFailedPositions)
+    }
+
+    @Test
+    fun tickWaterLeavesRecentlyFailedPositionsEmpty() {
+        val simulation = Simulation(
+            waterSystem = WaterSystem(ticksPerRise = 1, risePerStep = 16, maxHeight = 20),
+        )
+        val state = SimulationState(
+            board = Board.empty()
+                .place(GridPosition(0, 0), Cell(Material.CONCRETE))
+                .place(GridPosition(0, 1), Cell(Material.CONCRETE))
+                .withRecalculatedBonds(),
+        )
+
+        val next = simulation.tickWater(state)
+
+        assertEquals(2, next.board.occupiedCount)
+        assertTrue(next.recentlyFailedPositions.isEmpty())
+    }
+
+    @Test
+    fun stepWithoutFailuresLeavesRecentlyFailedPositionsEmpty() {
+        val simulation = Simulation(
+            waterSystem = WaterSystem(ticksPerRise = 1, risePerStep = 1, maxHeight = 20),
+        )
+        val state = SimulationState(
+            board = Board.empty()
+                .place(GridPosition(0, 0), Cell(Material.CONCRETE))
+                .withRecalculatedBonds(),
+        )
+
+        val next = simulation.step(state)
+
+        assertEquals(1, next.board.occupiedCount)
+        assertTrue(next.recentlyFailedPositions.isEmpty())
+    }
 }

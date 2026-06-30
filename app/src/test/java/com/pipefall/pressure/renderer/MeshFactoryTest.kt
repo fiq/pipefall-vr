@@ -55,6 +55,17 @@ class MeshFactoryTest {
         assertEquals(0f, mesh.vertices[17], 0.0001f)
     }
 
+    @Test
+    fun crackLinesUseLinesForThreeCrossingSegmentsOnTheFrontFace() {
+        val mesh = MeshFactory().createCrackLines()
+
+        assertEquals(MeshDrawMode.LINES, mesh.drawMode)
+        assertEquals(6, mesh.vertexCount)
+        assertEquals(0.5f, mesh.vertices[2], 0.0001f)
+        assertEquals(0.5f, mesh.vertices[5], 0.0001f)
+        assertEquals(0.5f, mesh.vertices[8], 0.0001f)
+    }
+
     private fun FloatArray.contains(value: Float): Boolean =
         any { kotlin.math.abs(it - value) < 0.0001f }
 }

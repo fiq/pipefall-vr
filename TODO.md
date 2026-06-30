@@ -46,10 +46,11 @@ For every Ralph loop:
 - [x] Render active descending engineering module.
 - [x] Wire Quest controller thumbstick, rotate button, and trigger drop inputs.
 - [x] Render water plane behind the wall.
+- [x] Render cracked and failed cell states.
 
 ## Next
 
-- [ ] Render cracked and failed cell states.
+- [ ] Add debug statistics snapshot.
 
 ## Backlog
 

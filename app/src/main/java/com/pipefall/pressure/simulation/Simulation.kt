@@ -62,12 +62,19 @@ class Simulation(
                 state.board
             }
         val nextGameOver = state.gameOver || waterSystem.isAtTop(nextWater)
+        val nextRecentlyFailed =
+            if (resolveFailures) {
+                state.board.cells().keys - nextBoard.cells().keys
+            } else {
+                emptySet()
+            }
 
         return state.copy(
             board = nextBoard,
             water = nextWater,
             gameOver = nextGameOver,
             ticksElapsed = state.ticksElapsed + ticks,
+            recentlyFailedPositions = nextRecentlyFailed,
         )
     }
 
@@ -82,9 +89,13 @@ class Simulation(
         return if (state.board.canPlace(module, origin)) {
             state.copy(
                 activeModule = ActiveModuleState(module = module, origin = origin),
+                recentlyFailedPositions = emptySet(),
             )
         } else {
-            state.copy(gameOver = true)
+            state.copy(
+                gameOver = true,
+                recentlyFailedPositions = emptySet(),
+            )
         }
     }
 
@@ -95,7 +106,10 @@ class Simulation(
         val activeModule = state.activeModule ?: return state
         val moved = activeModule.translated(deltaX, 0)
         return if (state.board.canPlace(moved.module, moved.origin)) {
-            state.copy(activeModule = moved)
+            state.copy(
+                activeModule = moved,
+                recentlyFailedPositions = emptySet(),
+            )
         } else {
             state
         }
@@ -105,7 +119,10 @@ class Simulation(
         val activeModule = state.activeModule ?: return state
         val rotated = activeModule.rotatedClockwise()
         return if (state.board.canPlace(rotated.module, rotated.origin)) {
-            state.copy(activeModule = rotated)
+            state.copy(
+                activeModule = rotated,
+                recentlyFailedPositions = emptySet(),
+            )
         } else {
             state
         }
@@ -114,7 +131,10 @@ class Simulation(
     private fun hardDrop(state: SimulationState): SimulationState {
         val activeModule = state.activeModule ?: return state
         if (!state.board.canPlace(activeModule.module, activeModule.origin)) {
-            return state.copy(gameOver = true)
+            return state.copy(
+                gameOver = true,
+                recentlyFailedPositions = emptySet(),
+            )
         }
 
         var landing = activeModule.origin
@@ -126,6 +146,7 @@ class Simulation(
             board = state.board.lock(activeModule.module, landing),
             activeModule = null,
             nextSpawnIndex = state.nextSpawnIndex + 1,
+            recentlyFailedPositions = emptySet(),
         )
     }
 

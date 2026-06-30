@@ -6,7 +6,8 @@ This file records build, test, device, design, and process failures encountered 
 
 - Meta XR SDK/OpenXR runtime integration has not yet been added.
 - No Quest device run has been performed.
-- Foundational board, module catalog, rotation, collision, water, pressure, support, failure, simulation tests, Android activity shell, renderer skeleton, fixed board surface, locked-cell geometry, and active module rendering exist, but device validation is still pending.
+- Foundational board, module catalog, rotation, collision, water, pressure, support, failure, simulation tests, Android activity shell, renderer skeleton, fixed board surface, locked-cell geometry, active module rendering, and cracked/failed cell state rendering exist, but device validation is still pending.
+- The `StructuralState.FAILED` enum value is intentionally unused on the rendered board: `FailureSystem` removes failed cells rather than marking them. The renderer flashes recently failed positions via `SimulationState.recentlyFailedPositions` instead.
 
 ## Failure Log
 
@@ -161,4 +162,13 @@ This file records build, test, device, design, and process failures encountered 
 - Context: Added a translucent water fill behind the board surface so the rising reservoir is visible in the renderer.
 - Added: `WaterRenderer` now owns the water plane pass, `MeshFactory` now provides a reusable flat quad, and `BoardRenderer` delegates water rendering so the board/cell renderer stays under the local size guard.
 - Verification: `nix develop --command scripts/pressure_check.sh` passed after splitting water into its own renderer to satisfy `scripts/agent_check.sh`.
+- Device: Quest run not attempted in this loop.
+
+### 2026-06-30 - Cracked And Failed Cell States
+
+- Context: Added visible crack overlays, darkened cracked cell colors, and a failure flash for recently removed cells.
+- Issue: The simulation removes failed cells from the board (`FailureSystem` deletes them rather than marking `StructuralState.FAILED`), so there was no failed cell left on the board for the renderer to draw.
+- Resolution: Added `recentlyFailedPositions` to `SimulationState`, populated by diffing board cell keys before and after failure resolution in `Simulation.advanceWater`. The renderer flashes those positions via the new `CrackRenderer`. Non-step commands clear the marker so the flash does not persist.
+- Added: `CrackRenderer` owns crack line overlays and the failure flash pass, `MeshFactory.createCrackLines()` provides three crossing line segments on the front face, `BoardRenderer` darkens cracked cell colors and delegates crack/flash rendering, and simulation tests cover recently failed positions on step, tick-water, and no-failure paths.
+- Verification: `nix develop --command scripts/pressure_check.sh` passed.
 - Device: Quest run not attempted in this loop.

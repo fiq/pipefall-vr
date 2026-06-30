@@ -7,6 +7,7 @@ data class SimulationState(
     val gameOver: Boolean = false,
     val ticksElapsed: Int = 0,
     val nextSpawnIndex: Int = 0,
+    val recentlyFailedPositions: Set<GridPosition> = emptySet(),
 ) {
     init {
         require(nextSpawnIndex >= 0) { "nextSpawnIndex must be non-negative" }

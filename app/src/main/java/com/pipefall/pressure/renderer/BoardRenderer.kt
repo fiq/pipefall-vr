@@ -6,10 +6,12 @@ import com.pipefall.pressure.simulation.Board
 import com.pipefall.pressure.simulation.Material
 import com.pipefall.pressure.simulation.ModuleCell
 import com.pipefall.pressure.simulation.SimulationState
+import com.pipefall.pressure.simulation.StructuralState
 
 class BoardRenderer(
     private val meshFactory: MeshFactory = MeshFactory(),
     private val waterRenderer: WaterRenderer = WaterRenderer(meshFactory),
+    private val crackRenderer: CrackRenderer = CrackRenderer(meshFactory),
 ) {
     private val boardDistanceMeters = 2.5f
     private val cellSizeMeters = 0.12f
@@ -45,6 +47,7 @@ class BoardRenderer(
             colorHandle = shader.uniformLocation("uColor")
         }
         waterRenderer.onSurfaceCreated()
+        crackRenderer.onSurfaceCreated()
     }
 
     fun draw(
@@ -79,6 +82,7 @@ class BoardRenderer(
         drawMesh(gridMesh, gridColor)
         drawLockedCells(state.board)
         drawActiveModule(state)
+        crackRenderer.draw(state, boardModelMatrix, viewMatrix, projectionMatrix, cellSizeMeters)
     }
 
     private fun ensureMeshes(board: Board) {
@@ -111,7 +115,7 @@ class BoardRenderer(
 
         for (position in board.occupiedPositions()) {
             val cell = board[position] ?: continue
-            val color = colorFor(cell.material)
+            val color = colorFor(cell.material, cell.state)
             val x = -halfWidth + cellSizeMeters * (position.x + 0.5f)
             val y = -halfHeight + cellSizeMeters * (position.y + 0.5f)
 
@@ -147,8 +151,11 @@ class BoardRenderer(
         }
     }
 
-    private fun colorFor(material: Material): FloatArray =
-        when (material) {
+    private fun colorFor(
+        material: Material,
+        state: StructuralState = StructuralState.STABLE,
+    ): FloatArray {
+        val base = when (material) {
             Material.CONCRETE -> floatArrayOf(0.76f, 0.77f, 0.79f, 0.97f)
             Material.STEEL -> floatArrayOf(0.48f, 0.52f, 0.56f, 0.97f)
             Material.DRAIN -> floatArrayOf(0.28f, 0.42f, 0.66f, 0.96f)
@@ -156,6 +163,20 @@ class BoardRenderer(
             Material.REINFORCEMENT -> floatArrayOf(0.67f, 0.49f, 0.28f, 0.96f)
             Material.SERVICE_SHAFT -> floatArrayOf(0.35f, 0.34f, 0.32f, 0.96f)
         }
+        return if (state == StructuralState.CRACKED) {
+            darken(base)
+        } else {
+            base
+        }
+    }
+
+    private fun darken(color: FloatArray): FloatArray =
+        floatArrayOf(
+            (color[0] * 0.7f),
+            (color[1] * 0.7f),
+            (color[2] * 0.7f),
+            color[3],
+        )
 
     private fun activeModuleColorFor(moduleCell: ModuleCell): FloatArray {
         val baseColor = colorFor(moduleCell.cell.material)

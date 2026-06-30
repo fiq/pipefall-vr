@@ -308,3 +308,32 @@ hover offset  -> not yet locked
 ```
 
 The board now shows the difference between structure and intent, which is the right visual language for the next input loop.
+
+## Loop 18: The Dam Remembers Its Wounds
+
+This loop had a small philosophical problem hiding inside it: how do you render a failed cell when the simulation already threw it away?
+
+The failure system does not leave corpses. When a block fails, `FailureSystem` removes it from the board entirely. There is no `StructuralState.FAILED` cell sitting on the grid waiting to be drawn, because by the time the renderer sees the state, the cell is gone. That is the right simulation behaviour, but it is a awkward rendering behaviour. A block that simply vanishes does not read as collapse. It reads as a typo.
+
+So the loop crossed the sim/render boundary on purpose, but carefully. `SimulationState` now carries a `recentlyFailedPositions` set, populated by diffing the board's cell keys before and after failure resolution. The simulation still owns the rules and stays pure Kotlin with no Android imports. It just also remembers, for one tick, which positions disappeared. The renderer can flash those ghosts red before they are forgotten.
+
+```text
+before resolve:  { (0,0), (0,1) }
+after resolve:   { }
+recentlyFailed:  { (0,0), (0,1) }  -> renderer flashes red
+next command:     recentlyFailed cleared
+```
+
+Cracked cells were the easier half. They already exist on the board with `state = CRACKED`, so the renderer just needed to notice. `BoardRenderer` now darkens cracked cells to 70% of their material colour, and a new `CrackRenderer` draws three crossing dark line segments across the front face. The crack geometry is deliberately cheap: a few `GL_LINES`, no textures, no shaders doing clever things. It reads as damage at a glance, which is all a Quest-class prototype needs.
+
+The `CrackRenderer` follows the `WaterRenderer` precedent. When `BoardRenderer` started growing past its comfort zone, the crack and flash pass moved into its own type rather than bloating the board/cell renderer. That keeps the size guard honest and the responsibilities clean: board draws structure, water draws the reservoir, cracks draw the damage.
+
+This is also the first loop driven by glm-5.2 as the working model. The shape of the work, the discipline of reading the docs first, and the habit of running the smallest relevant test before declaring victory all held up. The dam now has a memory of its own failures, even if only for a single tick, and that is enough to make collapse feel like something happened rather than nothing.
+
+```text
+cracked cell  -> darkened + crack lines
+failed cell   -> removed, then flashed red for one tick
+simulation    -> still pure, still deterministic
+```
+
+The next loop can turn toward the debug overlay, where the dam's internal numbers finally become visible to the player instead of only to the tests.
