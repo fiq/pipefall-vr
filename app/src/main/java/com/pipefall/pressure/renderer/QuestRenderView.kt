@@ -54,6 +54,10 @@ class QuestRenderView(context: Context) : FrameLayout(context) {
         surfaceView.onPause()
     }
 
+    fun setStatus(text: CharSequence) {
+        shellView.setStatus(text)
+    }
+
     override fun onGenericMotionEvent(event: MotionEvent): Boolean {
         if (event.isFromSource(InputDevice.SOURCE_JOYSTICK or InputDevice.SOURCE_GAMEPAD)) {
             val command = rendererController.onThumbstickX(event.getAxisValue(MotionEvent.AXIS_X))

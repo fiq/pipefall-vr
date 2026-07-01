@@ -9,9 +9,13 @@ import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.view.WindowManager
 import com.pipefall.pressure.renderer.QuestRenderView
+import com.pipefall.pressure.simulation.Simulation
+import com.pipefall.pressure.simulation.SimulationCommand
+import com.pipefall.pressure.simulation.SimulationState
 
 class QuestActivity : Activity() {
     private lateinit var renderView: QuestRenderView
+    private val simulation = Simulation()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,6 +27,17 @@ class QuestActivity : Activity() {
         // NPE because the DecorView has not been created yet.
         setContentView(renderView)
         configureFullscreen()
+
+        val initialState = simulation.spawn(SimulationState())
+        renderView.renderer.state = initialState
+        renderView.onCommand = { command ->
+            val nextState = simulation.apply(renderView.renderer.state, command)
+            renderView.renderer.state = nextState
+            if (command == SimulationCommand.HardDrop && nextState.activeModule == null) {
+                renderView.renderer.state = simulation.spawn(nextState)
+            }
+        }
+        renderView.setStatus("Ready")
     }
 
     override fun onResume() {
