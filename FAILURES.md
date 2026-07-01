@@ -5,7 +5,7 @@ This file records build, test, device, design, and process failures encountered 
 ## Current Known Issues
 
 - Meta XR SDK/OpenXR runtime integration has not yet been added.
-- No Quest device run has been performed.
+- A Quest 3 device install has been performed, but no successful in-headset launch has been verified. The first device launch crashed due to a `WindowInsetsController` NPE in `QuestActivity.onCreate` (now fixed by reordering `setContentView` before `configureFullscreen`); subsequent adb launches are blocked by Horizon OS `RequiresControllersLaunchInterceptor` pending active controllers.
 - Foundational board, module catalog, rotation, collision, water, pressure, support, failure, simulation tests, Android activity shell, renderer skeleton, fixed board surface, locked-cell geometry, active module rendering, cracked/failed cell state rendering, and debug statistics snapshot exist, but device validation is still pending.
 - The `StructuralState.FAILED` enum value is intentionally unused on the rendered board: `FailureSystem` removes failed cells rather than marking them. The renderer flashes recently failed positions via `SimulationState.recentlyFailedPositions` instead.
 
@@ -180,3 +180,12 @@ This file records build, test, device, design, and process failures encountered 
 - Note: `failedCount` reflects `SimulationState.recentlyFailedPositions` because `FailureSystem` removes failed cells rather than marking them, so there is no persistent failed-cell tally on the board.
 - Verification: `nix develop --command scripts/pressure_check.sh` passed.
 - Device: Quest run not attempted in this loop.
+
+### 2026-07-01 - Quest 3 Launch Crash (WindowInsetsController NPE)
+
+- Context: First Quest 3 device install of the debug APK. The app terminated immediately on launch.
+- Issue: `adb shell dumpsys dropbox` showed `java.lang.RuntimeException: Unable to start activity ComponentInfo{com.pipefall.pressure/.QuestActivity}: java.lang.NullPointerException: Attempt to invoke virtual method 'android.view.WindowInsetsController com.android.internal.policy.DecorView.getWindowInsetsController()' on a null object reference` at `QuestActivity.configureFullscreen(QuestActivity.kt:42)` called from `QuestActivity.onCreate(QuestActivity.kt:21)`.
+- Root cause: `configureFullscreen()` was called before `setContentView(renderView)`. `window.insetsController` internally resolves through the window's `DecorView`, which is lazily created by `setContentView`/`getDecorView()`. With no content view set yet, `mDecorView` was null, so `getWindowInsetsController()` threw an NPE. This was a pre-existing bug, not caused by the statistics snapshot work.
+- Resolution: Reordered `onCreate` so `setContentView(renderView)` runs before `configureFullscreen()`. `requestWindowFeature(Window.FEATURE_NO_TITLE)` stays first because it must precede `setContentView`.
+- Verification: `gradle --no-daemon assembleDebug` rebuilt successfully; APK reinstalled on the Quest 3. adb-driven launches (`am start` and `monkey`) are intercepted by Horizon OS `RequiresControllersLaunchInterceptor` before `onCreate` runs, so the fix could not be verified end-to-end from adb without active controllers. In-headset verification with controllers awake is still pending.
+- Device: Quest 3 (`2G0YC1ZG35058P`, model `Quest_3`). APK installs cleanly; launch blocked pending active controllers.

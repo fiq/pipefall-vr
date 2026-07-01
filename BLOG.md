@@ -359,3 +359,31 @@ The interesting wrinkle was the failed count. The failure system does not leave 
 The heatmaps are recomputed from the board using the same default `PressureSystem` and `SupportSystem` the simulation already trusts. That is deliberately not clever. The debug numbers should never disagree with the rules, so they ask the same rules the rules ask.
 
 The overlay itself is still for the next loop. But the dam now has a clean, testable seam where the numbers live, and the renderer can read them without learning anything about pressure or support maths.
+
+## Loop 20: The Headset Says No, Then Says Why
+
+The first real Quest 3 install was a short loop with a sharp lesson attached. The APK packaged and installed cleanly, but the app died the instant it tried to stand up. The dropbox told the story plainly: a `NullPointerException` inside `QuestActivity.configureFullscreen`, called from `onCreate`, before the window had a decor view to ask for an insets controller.
+
+```text
+onCreate:
+  requestWindowFeature(NO_TITLE)
+  renderView = QuestRenderView(this)
+  configureFullscreen()   <- window.insetsController -> DecorView is null
+  setContentView(renderView)
+```
+
+The order was simply wrong. `window.insetsController` resolves through the window's `DecorView`, and that view is created lazily by `setContentView` (or `getDecorView`). Calling `configureFullscreen` first meant asking a window that had not yet been furnished for an insets controller that did not yet exist. The fix was a two-line reorder: set the content view, then configure fullscreen. `requestWindowFeature` stays first because it must precede `setContentView`.
+
+```text
+onCreate:
+  requestWindowFeature(NO_TITLE)
+  renderView = QuestRenderView(this)
+  setContentView(renderView)   <- decor view now exists
+  configureFullscreen()        <- insets controller is real
+```
+
+The humbling part was verification. Every adb-driven launch — `am start`, `monkey` — was intercepted by Horizon OS before `onCreate` could run, because the OS requires active controllers for a VR activity and the controllers were asleep. So the fix could be confirmed by build and by matching the exact root cause, but not by watching the process survive on device from the command line. That is the honest state: the crash is addressed at its source, and the next in-headset run with controllers awake is the real proof.
+
+This is the kind of bug that only a device can surface. The unit tests pass, the build is green, and the APK is well-formed, but none of that catches an activity that asks its window for furniture before moving any in. The dam now has its first device-driven fix, even if the device is still gatekeeping the final confirmation.
+
+A note on the model driving this loop. Loop 18 was the first glm-5.2 loop, and it held its discipline: read the docs first, run the smallest test, stop at one TODO. This loop tested a different muscle — device debugging under adb — and glm-5.2 handled it without scope creep. It pulled the real crash trace from `dumpsys dropbox` rather than guessing at the renderer, matched the stack frame to the exact line, and made the smallest reorder that fixes the root cause instead of patching around it. Compared with earlier loops, the shape of the work is the same small Ralph loop, but the diagnosis is more deliberate: evidence from the device before the edit, not a hypothesis dressed up as a fix.

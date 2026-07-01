@@ -18,8 +18,11 @@ class QuestActivity : Activity() {
 
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         renderView = QuestRenderView(this)
-        configureFullscreen()
+        // setContentView must run before configureFullscreen so the window's
+        // decor view is installed; otherwise window.insetsController throws an
+        // NPE because the DecorView has not been created yet.
         setContentView(renderView)
+        configureFullscreen()
     }
 
     override fun onResume() {
