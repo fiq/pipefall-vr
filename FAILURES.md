@@ -5,8 +5,8 @@ This file records build, test, device, design, and process failures encountered 
 ## Current Known Issues
 
 - Meta XR SDK/OpenXR runtime integration has not yet been added.
-- A Quest 3 device install has been performed, but no successful in-headset launch has been verified. The first device launch crashed due to a `WindowInsetsController` NPE in `QuestActivity.onCreate` (now fixed by reordering `setContentView` before `configureFullscreen`); subsequent adb launches are blocked by Horizon OS `RequiresControllersLaunchInterceptor` pending active controllers.
-- Foundational board, module catalog, rotation, collision, water, pressure, support, failure, simulation tests, Android activity shell, renderer skeleton, fixed board surface, locked-cell geometry, active module rendering, cracked/failed cell state rendering, and debug statistics snapshot exist, but device validation is still pending.
+- A Quest 3 device install has been performed. The first device launch crashed due to a `WindowInsetsController` NPE in `QuestActivity.onCreate` (fixed by reordering `setContentView` before `configureFullscreen`). The second launch showed infinite loading dots because `com.oculus.intent.category.VR` in the manifest forced immersive VR mode without an OpenXR session (fixed by removing the category until OpenXR integration exists). The app now launches successfully as a 2D panel and renders the dam/board.
+- Foundational board, module catalog, rotation, collision, water, pressure, support, failure, simulation tests, Android activity shell, renderer skeleton, fixed board surface, locked-cell geometry, active module rendering, cracked/failed cell state rendering, and debug statistics snapshot exist. The app runs on Quest 3 as a 2D panel; immersive VR rendering via OpenXR is still pending.
 - The `StructuralState.FAILED` enum value is intentionally unused on the rendered board: `FailureSystem` removes failed cells rather than marking them. The renderer flashes recently failed positions via `SimulationState.recentlyFailedPositions` instead.
 
 ## Failure Log
@@ -189,3 +189,12 @@ This file records build, test, device, design, and process failures encountered 
 - Resolution: Reordered `onCreate` so `setContentView(renderView)` runs before `configureFullscreen()`. `requestWindowFeature(Window.FEATURE_NO_TITLE)` stays first because it must precede `setContentView`.
 - Verification: `gradle --no-daemon assembleDebug` rebuilt successfully; APK reinstalled on the Quest 3. adb-driven launches (`am start` and `monkey`) are intercepted by Horizon OS `RequiresControllersLaunchInterceptor` before `onCreate` runs, so the fix could not be verified end-to-end from adb without active controllers. In-headset verification with controllers awake is still pending.
 - Device: Quest 3 (`2G0YC1ZG35058P`, model `Quest_3`). APK installs cleanly; launch blocked pending active controllers.
+
+### 2026-07-01 - Quest 3 Infinite Loading (com.oculus.intent.category.VR)
+
+- Context: After the NPE fix, the app launched but showed three loading dots forever in the headset. The process was alive (no crash, no ANR).
+- Issue: `adb logcat` showed `D VrosSpatialAudio: Immersive activity detected`, `W GLSurfaceView: !readyToDraw() but waiting for draw finished!`, `E OpenGLRenderer: Unable to match the desired swap behavior.`, then `setStopped(1)` within 1ms of `setStopped(0)`.
+- Root cause: The manifest declared `com.oculus.intent.category.VR` on the launcher intent filter. This tells Horizon OS to launch the activity in immersive VR mode. The OS then waits for the app to create an OpenXR session and take over VR rendering. The app has no OpenXR/Meta XR SDK integration yet — it renders to a standard `GLSurfaceView` — so the OS loading screen never resolves.
+- Resolution: Removed `com.oculus.intent.category.VR` from the launcher intent filter. The app now launches as a 2D panel (volumetric window) in the Quest environment, which is what it actually is until OpenXR integration is added. The `headtracking` feature and `com.oculus.supportedDevices` metadata remain because they do not trigger immersive mode.
+- Verification: Rebuilt, reinstalled, launched from the Quest app library. The app renders as a 2D panel with the dam/board visible. Confirmed by user.
+- Device: Quest 3 (`2G0YC1ZG35058P`, model `Quest_3`). Successful in-headset launch as a 2D panel.

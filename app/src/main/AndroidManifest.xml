@@ -32,7 +32,11 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="com.oculus.intent.category.VR" />
+                <!-- com.oculus.intent.category.VR is intentionally omitted until the app
+                     creates an OpenXR session. With it present, Horizon OS launches the
+                     activity in immersive VR mode and shows a loading screen while waiting
+                     for the app to take over VR rendering, which never happens without
+                     OpenXR integration. Without it, the app runs as a 2D panel. -->
             </intent-filter>
         </activity>
     </application>

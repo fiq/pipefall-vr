@@ -387,3 +387,23 @@ The humbling part was verification. Every adb-driven launch — `am start`, `mon
 This is the kind of bug that only a device can surface. The unit tests pass, the build is green, and the APK is well-formed, but none of that catches an activity that asks its window for furniture before moving any in. The dam now has its first device-driven fix, even if the device is still gatekeeping the final confirmation.
 
 A note on the model driving this loop. Loop 18 was the first glm-5.2 loop, and it held its discipline: read the docs first, run the smallest test, stop at one TODO. This loop tested a different muscle — device debugging under adb — and glm-5.2 handled it without scope creep. It pulled the real crash trace from `dumpsys dropbox` rather than guessing at the renderer, matched the stack frame to the exact line, and made the smallest reorder that fixes the root cause instead of patching around it. Compared with earlier loops, the shape of the work is the same small Ralph loop, but the diagnosis is more deliberate: evidence from the device before the edit, not a hypothesis dressed up as a fix.
+
+## Loop 21: The Headset Says Yes
+
+The NPE was fixed, the build was green, the APK was on the device. The user put the headset on, launched Pressure, and saw three loading dots. They stayed. Forever.
+
+The process was alive — no crash, no ANR, no GL error. The logcat told the story in three lines:
+
+```text
+D VrosSpatialAudio: Immersive activity detected, skip VrosSpatialAudio init
+W GLSurfaceView: !readyToDraw() but waiting for draw finished!
+E OpenGLRenderer: Unable to match the desired swap behavior.
+```
+
+"Immersive activity detected." That was the clue. The manifest declared `com.oculus.intent.category.VR` on the launcher intent filter. Horizon OS reads that category and launches the activity in immersive VR mode — full takeover of the displays, the compositor waiting for the app to create an OpenXR session and begin rendering to the eye buffers. The app has no OpenXR integration. It renders to a standard `GLSurfaceView`. So the OS showed its loading screen and waited for a VR session that would never come.
+
+The fix was one line removed from the manifest. Without `com.oculus.intent.category.VR`, the app launches as a 2D panel — a floating window in the Quest environment. That is what it actually is right now: a flat OpenGL surface drawing a dam and a board, not a stereoscopic VR experience. The `headtracking` feature and `com.oculus.supportedDevices` metadata stay, because they describe capabilities and target devices without triggering immersive mode.
+
+The user launched it from the library and saw the dam. The board was there. The loading dots were gone. The first successful in-headset render.
+
+Two device bugs, two one-line fixes, both found by reading what the device actually said rather than guessing. The NPE was in the dropbox. The loading was in the logcat. The device is the source of truth, and it is generous with evidence if you ask it the right questions.
