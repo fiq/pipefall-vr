@@ -47,10 +47,11 @@ For every Ralph loop:
 - [x] Wire Quest controller thumbstick, rotate button, and trigger drop inputs.
 - [x] Render water plane behind the wall.
 - [x] Render cracked and failed cell states.
+- [x] Add debug statistics snapshot.
 
 ## Next
 
-- [ ] Add debug statistics snapshot.
+- [ ] Add debug overlay for FPS, water height, max pressure, cracked count, failed count, support heatmap, and pressure heatmap.
 
 ## Backlog
 
@@ -58,7 +59,6 @@ For every Ralph loop:
 - [ ] Render locked board cells as simple 3D geometry.
 - [ ] Render active descending engineering module.
 - [ ] Render cracked and failed cell states.
-- [ ] Add debug statistics snapshot.
 - [ ] Add debug overlay for FPS, water height, max pressure, cracked count, failed count, support heatmap, and pressure heatmap.
 - [ ] Add game over state rendering.
 - [ ] Run on Meta Quest and record device notes.

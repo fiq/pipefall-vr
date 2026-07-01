@@ -6,7 +6,7 @@ This file records build, test, device, design, and process failures encountered 
 
 - Meta XR SDK/OpenXR runtime integration has not yet been added.
 - No Quest device run has been performed.
-- Foundational board, module catalog, rotation, collision, water, pressure, support, failure, simulation tests, Android activity shell, renderer skeleton, fixed board surface, locked-cell geometry, active module rendering, and cracked/failed cell state rendering exist, but device validation is still pending.
+- Foundational board, module catalog, rotation, collision, water, pressure, support, failure, simulation tests, Android activity shell, renderer skeleton, fixed board surface, locked-cell geometry, active module rendering, cracked/failed cell state rendering, and debug statistics snapshot exist, but device validation is still pending.
 - The `StructuralState.FAILED` enum value is intentionally unused on the rendered board: `FailureSystem` removes failed cells rather than marking them. The renderer flashes recently failed positions via `SimulationState.recentlyFailedPositions` instead.
 
 ## Failure Log
@@ -170,5 +170,13 @@ This file records build, test, device, design, and process failures encountered 
 - Issue: The simulation removes failed cells from the board (`FailureSystem` deletes them rather than marking `StructuralState.FAILED`), so there was no failed cell left on the board for the renderer to draw.
 - Resolution: Added `recentlyFailedPositions` to `SimulationState`, populated by diffing board cell keys before and after failure resolution in `Simulation.advanceWater`. The renderer flashes those positions via the new `CrackRenderer`. Non-step commands clear the marker so the flash does not persist.
 - Added: `CrackRenderer` owns crack line overlays and the failure flash pass, `MeshFactory.createCrackLines()` provides three crossing line segments on the front face, `BoardRenderer` darkens cracked cell colors and delegates crack/flash rendering, and simulation tests cover recently failed positions on step, tick-water, and no-failure paths.
+- Verification: `nix develop --command scripts/pressure_check.sh` passed.
+- Device: Quest run not attempted in this loop.
+
+### 2026-06-30 - Debug Statistics Snapshot
+
+- Context: Added the first `debug` package type, a pure Kotlin statistics snapshot derived from `SimulationState`.
+- Added: `StatisticsSnapshot` carries water height, max pressure, cracked count, failed count, occupied count, game over, ticks elapsed, and pressure/support heatmaps. `Statistics` produces the snapshot by recomputing pressure and support from the board using the default systems. `StatisticsTest` covers empty board, submerged pressure, cracked count, recently failed count, game over, and support heatmap population.
+- Note: `failedCount` reflects `SimulationState.recentlyFailedPositions` because `FailureSystem` removes failed cells rather than marking them, so there is no persistent failed-cell tally on the board.
 - Verification: `nix develop --command scripts/pressure_check.sh` passed.
 - Device: Quest run not attempted in this loop.

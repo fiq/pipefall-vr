@@ -337,3 +337,25 @@ simulation    -> still pure, still deterministic
 ```
 
 The next loop can turn toward the debug overlay, where the dam's internal numbers finally become visible to the player instead of only to the tests.
+
+## Loop 19: The Dam Shows Its Working
+
+The debug overlay has been a line in the spec since the beginning: FPS, water height, max pressure, cracked count, failed count, support heatmap, pressure heatmap. But an overlay is two problems wearing one hat. First you need the numbers in a form the renderer can trust. Only then do you need the pixels.
+
+This loop did the first half. The new `debug` package owns a `StatisticsSnapshot` and a `Statistics` producer that turns a `SimulationState` into that snapshot. It stays pure Kotlin with no Android imports, because the whole point of the simulation boundary is that the dam's internal accounting should be inspectable from a unit test, not gated behind a headset.
+
+```text
+SimulationState -> Statistics -> StatisticsSnapshot
+                                  water height
+                                  max pressure
+                                  cracked count
+                                  failed count
+                                  pressure heatmap
+                                  support heatmap
+```
+
+The interesting wrinkle was the failed count. The failure system does not leave failed cells lying around on the board; it removes them. So there is no `StructuralState.FAILED` cell to count at snapshot time. Instead `failedCount` reads `recentlyFailedPositions`, the one-tick ghost set that the last loop added precisely so the renderer could flash collapse before forgetting it. That keeps the snapshot honest about what the simulation actually knows: a cell failed this step, and now it is gone.
+
+The heatmaps are recomputed from the board using the same default `PressureSystem` and `SupportSystem` the simulation already trusts. That is deliberately not clever. The debug numbers should never disagree with the rules, so they ask the same rules the rules ask.
+
+The overlay itself is still for the next loop. But the dam now has a clean, testable seam where the numbers live, and the renderer can read them without learning anything about pressure or support maths.
