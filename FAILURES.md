@@ -7,6 +7,7 @@ This file records build, test, device, design, and process failures encountered 
 - Meta XR SDK/OpenXR runtime integration has not yet been added.
 - A Quest 3 device install has been performed. The first device launch crashed due to a `WindowInsetsController` NPE in `QuestActivity.onCreate` (fixed by reordering `setContentView` before `configureFullscreen`). The second launch showed infinite loading dots because `com.oculus.intent.category.VR` in the manifest forced immersive VR mode without an OpenXR session (fixed by removing the category until OpenXR integration exists). The app now launches successfully as a 2D panel and renders the dam/board.
 - Foundational board, module catalog, rotation, collision, water, pressure, support, failure, simulation tests, Android activity shell, renderer skeleton, fixed board surface, locked-cell geometry, active module rendering, cracked/failed cell state rendering, debug statistics snapshot, debug overlay, and game over state rendering exist. The app runs on Quest 3 as a 2D panel; immersive VR rendering via OpenXR is still pending.
+- `BoardRenderer.draw()` is now pose-driven: view and projection matrices are supplied as parameters by `OpenXRRenderer` rather than computed internally. This is the seam that later OpenXR per-eye rendering loops depend on. The 2D panel path is unchanged because `OpenXRRenderer` passes the same fixed camera matrices it computed before.
 - The `StructuralState.FAILED` enum value is intentionally unused on the rendered board: `FailureSystem` removes failed cells rather than marking them. The renderer flashes recently failed positions via `SimulationState.recentlyFailedPositions` instead.
 
 ## Failure Log
@@ -216,3 +217,11 @@ This file records build, test, device, design, and process failures encountered 
 - Note: The simulation already tracked `gameOver` in `SimulationState` and the debug overlay already printed a "GAME OVER" line. This loop added the prominent player-facing banner, not the simulation state or the debug text.
 - Verification: `nix develop --command bash -lc 'scripts/agent_check.sh && gradle --no-daemon lintDebug test assembleDebug'` passed. 69 tests, 0 failures.
 - Device: Quest run not attempted in this loop.
+
+### 2026-07-02 - Pose-Driven BoardRenderer
+
+- Context: First OpenXR immersive VR plan loop. Extracted view/projection matrices as parameters to `BoardRenderer.draw()` so VR can supply per-eye transforms later.
+- Added: `BoardRenderer.draw()` now takes `viewMatrix` and `projectionMatrix` as parameters instead of computing them internally. `OpenXRRenderer.onDrawFrame()` owns the fixed camera matrices via a new `computeCameraMatrices()` method and passes them down. The `drawLockedCells` and `drawActiveModule` private methods now accept the matrices as parameters, matching the existing `WaterRenderer` and `CrackRenderer` pattern.
+- Note: This is a behaviour-preserving refactor. The matrices passed in are the same values `BoardRenderer` computed before (`setLookAtM` with eye at origin looking down -Z, `perspectiveM` with 42° FOV, 0.1 near, 10 far). The 2D panel path renders identically. No new files, no test changes, no simulation changes.
+- Verification: `scripts/agent_check.sh` passed (file sizes under 220/260 limits, no boundary violations). `nix develop --command scripts/pressure_check.sh` passed. 69 tests, 0 failures. `assembleDebug` succeeded.
+- Device: Quest run not attempted in this loop (pure refactor, no visual change).

@@ -50,10 +50,11 @@ For every Ralph loop:
 - [x] Add debug statistics snapshot.
 - [x] Add debug overlay for FPS, water height, max pressure, cracked count, failed count, support heatmap, and pressure heatmap.
 - [x] Add game over state rendering.
+- [x] Make BoardRenderer pose-driven (extract view/projection matrices as parameters).
 
 ## Next
 
-- [ ] Run on Meta Quest and record device notes.
+- [ ] Add NDK + CMake scaffolding (build infrastructure).
 
 ## Backlog
 

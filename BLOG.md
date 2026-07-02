@@ -457,3 +457,31 @@ This loop added the player-facing banner. `QuestRenderView` now hosts a centered
 The simulation did not change. The debug overlay did not change. The only new behaviour is that the view layer now reads the `gameOver` flag it already had access to and shows a prominent red banner when the dam has failed. That is the smallest change that closes the gap between "the simulation knows the game is over" and "the player knows the game is over."
 
 The first milestone acceptance list is now complete on the rendering side. The dam can be built, water rises, pressure mounts, structures crack and fail, cascades resolve, the debug overlay shows the numbers, and game over is visible. What remains is OpenXR immersive rendering and a real Quest device run.
+
+## Loop 24: The Camera Moves Out
+
+The OpenXR plan has nine loops left, and the first one is the quietest. Before the headset can drive the camera, the camera has to stop belonging to the board.
+
+Until now, `BoardRenderer.draw()` computed its own view and projection matrices internally. A fixed `setLookAtM` placed the eye at the origin looking down the negative Z axis, and a `perspectiveM` gave it a 42-degree field of view. That is fine for a 2D panel. It is wrong for VR, where each eye needs its own view matrix derived from head pose.
+
+```text
+Before:
+  OpenXRRenderer.onDrawFrame
+    -> BoardRenderer.draw(state, w, h)
+         computes view + projection internally
+         -> WaterRenderer / CrackRenderer (already take matrices as params)
+
+After:
+  OpenXRRenderer.onDrawFrame
+    -> computeCameraMatrices()  (setLookAtM + perspectiveM)
+    -> BoardRenderer.draw(state, viewMatrix, projectionMatrix, w, h)
+         -> WaterRenderer / CrackRenderer (unchanged)
+```
+
+The interesting detail is that the seam already existed one level down. `WaterRenderer.draw()` and `CrackRenderer.draw()` already accepted `boardModelMatrix`, `viewMatrix`, and `projectionMatrix` as parameters. `BoardRenderer` was the only place still computing the camera internally before passing those same matrices to its sub-renderers. So this loop was a pure lift: move the camera-matrix ownership up to `OpenXRRenderer`, pass the matrices in, and let `BoardRenderer` become pose-driven without changing what it draws.
+
+The refactor is deliberately boring. The matrices `OpenXRRenderer` now computes are byte-for-byte the same values `BoardRenderer` computed before. The 2D panel path renders identically. No new files, no test changes, no simulation changes. The only new behaviour is that `BoardRenderer.draw()` no longer owns a camera — it renders whatever view and projection it is given. That is the seam every subsequent VR loop depends on: when Loop 29 arrives with per-eye `xrLocateViews` poses, it will call `BoardRenderer.draw()` once per eye with a different view matrix, and the board will render stereoscopically without `BoardRenderer` knowing anything about OpenXR.
+
+The file-size guard held. `BoardRenderer` dropped from 213 to 217 lines (the signature grew, but the internal camera computation shrank). `OpenXRRenderer` grew from 69 to 92 lines. Both stay well under the 220-line main limit. The camera constants — 42 degrees, 0.1 near, 10 far — moved from inline magic numbers in `BoardRenderer` to named constants in `OpenXRRenderer`'s companion object, which makes the eventual per-eye tuning easier to find.
+
+This is the kind of loop that is easy to undervalue because it changes nothing visible. But it is the load-bearing seam. Every VR loop from here to Loop 29 calls through it.

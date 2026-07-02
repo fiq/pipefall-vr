@@ -35,8 +35,6 @@ class BoardRenderer(
     private val boardModelMatrix = FloatArray(16)
     private val cellLocalMatrix = FloatArray(16)
     private val cellModelMatrix = FloatArray(16)
-    private val viewMatrix = FloatArray(16)
-    private val projectionMatrix = FloatArray(16)
     private val viewModelMatrix = FloatArray(16)
     private val mvpMatrix = FloatArray(16)
 
@@ -52,6 +50,8 @@ class BoardRenderer(
 
     fun draw(
         state: SimulationState,
+        viewMatrix: FloatArray,
+        projectionMatrix: FloatArray,
         viewportWidth: Int,
         viewportHeight: Int,
     ) {
@@ -62,11 +62,6 @@ class BoardRenderer(
         ensureMeshes(state.board)
 
         Matrix.setIdentityM(boardModelMatrix, 0)
-        Matrix.setIdentityM(viewMatrix, 0)
-        Matrix.setIdentityM(projectionMatrix, 0)
-
-        Matrix.setLookAtM(viewMatrix, 0, 0f, 0f, 0f, 0f, 0f, -1f, 0f, 1f, 0f)
-        Matrix.perspectiveM(projectionMatrix, 0, 42f, viewportWidth.toFloat() / viewportHeight.toFloat(), 0.1f, 10f)
         Matrix.translateM(boardModelMatrix, 0, 0f, 0f, -boardDistanceMeters)
 
         Matrix.multiplyMM(viewModelMatrix, 0, viewMatrix, 0, boardModelMatrix, 0)
@@ -80,8 +75,8 @@ class BoardRenderer(
         waterRenderer.draw(state, boardModelMatrix, viewMatrix, projectionMatrix, cellSizeMeters)
         drawMesh(surfaceMesh, surfaceColor)
         drawMesh(gridMesh, gridColor)
-        drawLockedCells(state.board)
-        drawActiveModule(state)
+        drawLockedCells(state.board, viewMatrix, projectionMatrix)
+        drawActiveModule(state, viewMatrix, projectionMatrix)
         crackRenderer.draw(state, boardModelMatrix, viewMatrix, projectionMatrix, cellSizeMeters)
     }
 
@@ -108,7 +103,11 @@ class BoardRenderer(
         GLES32.glDisableVertexAttribArray(positionHandle)
     }
 
-    private fun drawLockedCells(board: Board) {
+    private fun drawLockedCells(
+        board: Board,
+        viewMatrix: FloatArray,
+        projectionMatrix: FloatArray,
+    ) {
         val currentCellMesh = cellMesh ?: return
         val halfWidth = board.width * cellSizeMeters / 2f
         val halfHeight = board.height * cellSizeMeters / 2f
@@ -129,7 +128,11 @@ class BoardRenderer(
         }
     }
 
-    private fun drawActiveModule(state: SimulationState) {
+    private fun drawActiveModule(
+        state: SimulationState,
+        viewMatrix: FloatArray,
+        projectionMatrix: FloatArray,
+    ) {
         val activeModule = state.activeModule ?: return
         val currentCellMesh = cellMesh ?: return
         val halfWidth = state.board.width * cellSizeMeters / 2f
