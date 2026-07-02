@@ -2,4 +2,5 @@
     <string name="app_name">Pressure</string>
     <string name="shell_title">Pressure Quest Shell</string>
     <string name="shell_status">Ready</string>
+    <string name="game_over">GAME OVER</string>
 </resources>

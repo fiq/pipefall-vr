@@ -6,7 +6,7 @@ This file records build, test, device, design, and process failures encountered 
 
 - Meta XR SDK/OpenXR runtime integration has not yet been added.
 - A Quest 3 device install has been performed. The first device launch crashed due to a `WindowInsetsController` NPE in `QuestActivity.onCreate` (fixed by reordering `setContentView` before `configureFullscreen`). The second launch showed infinite loading dots because `com.oculus.intent.category.VR` in the manifest forced immersive VR mode without an OpenXR session (fixed by removing the category until OpenXR integration exists). The app now launches successfully as a 2D panel and renders the dam/board.
-- Foundational board, module catalog, rotation, collision, water, pressure, support, failure, simulation tests, Android activity shell, renderer skeleton, fixed board surface, locked-cell geometry, active module rendering, cracked/failed cell state rendering, and debug statistics snapshot exist. The app runs on Quest 3 as a 2D panel; immersive VR rendering via OpenXR is still pending.
+- Foundational board, module catalog, rotation, collision, water, pressure, support, failure, simulation tests, Android activity shell, renderer skeleton, fixed board surface, locked-cell geometry, active module rendering, cracked/failed cell state rendering, debug statistics snapshot, debug overlay, and game over state rendering exist. The app runs on Quest 3 as a 2D panel; immersive VR rendering via OpenXR is still pending.
 - The `StructuralState.FAILED` enum value is intentionally unused on the rendered board: `FailureSystem` removes failed cells rather than marking them. The renderer flashes recently failed positions via `SimulationState.recentlyFailedPositions` instead.
 
 ## Failure Log
@@ -198,3 +198,21 @@ This file records build, test, device, design, and process failures encountered 
 - Resolution: Removed `com.oculus.intent.category.VR` from the launcher intent filter. The app now launches as a 2D panel (volumetric window) in the Quest environment, which is what it actually is until OpenXR integration is added. The `headtracking` feature and `com.oculus.supportedDevices` metadata remain because they do not trigger immersive mode.
 - Verification: Rebuilt, reinstalled, launched from the Quest app library. The app renders as a 2D panel with the dam/board visible. Confirmed by user.
 - Device: Quest 3 (`2G0YC1ZG35058P`, model `Quest_3`). Successful in-headset launch as a 2D panel.
+
+### 2026-07-01 - Debug Overlay
+
+- Context: Added the debug overlay rendering pass that displays FPS, water height, max pressure, cracked count, failed count, occupied count, ticks elapsed, game over, and pressure/support heatmaps.
+- Added: `Overlay` is a pure Kotlin formatter in the `debug` package that turns a `StatisticsSnapshot` plus an FPS value into text lines, including compact character-grid heatmaps. `OverlayTest` covers scalar lines, game over, empty heatmaps, and intensity characters for both heatmaps.
+- Added: `OpenXRRenderer` now tracks frame rate via `System.nanoTime()` and exposes a volatile `fps` field. `QuestRenderView` now hosts a monospace debug `TextView` that updates every 250 ms from the renderer state via `Statistics` and `Overlay`.
+- Issue: First test run failed because the pressure heatmap test expected `"00"` for row y=1, but position (1,1) was not in the heatmap and should render as a dot (`"0."`).
+- Resolution: Corrected the test expectation to match the actual overlay behaviour: occupied cells with value zero render as `0`, unoccupied positions render as `.`.
+- Verification: `nix develop --command bash -lc 'scripts/agent_check.sh && gradle --no-daemon lintDebug test assembleDebug'` passed. 69 tests, 0 failures.
+- Device: Quest run not attempted in this loop.
+
+### 2026-07-01 - Game Over State Rendering
+
+- Context: Added a visible game over banner so the player can clearly see when the simulation has ended, separate from the debug overlay text.
+- Added: `QuestRenderView` now hosts a centered, bold, large red `gameOverView` `TextView` that toggles visibility based on `renderer.state.gameOver`. The banner is updated on the existing 250 ms polling runnable alongside the debug overlay. A `game_over` string resource was added to `strings.xml`.
+- Note: The simulation already tracked `gameOver` in `SimulationState` and the debug overlay already printed a "GAME OVER" line. This loop added the prominent player-facing banner, not the simulation state or the debug text.
+- Verification: `nix develop --command bash -lc 'scripts/agent_check.sh && gradle --no-daemon lintDebug test assembleDebug'` passed. 69 tests, 0 failures.
+- Device: Quest run not attempted in this loop.

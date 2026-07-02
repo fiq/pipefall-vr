@@ -1,23 +1,47 @@
 package com.pipefall.pressure.renderer
 
 import android.content.Context
+import android.graphics.Color
+import android.graphics.Typeface
 import android.opengl.GLSurfaceView
+import android.os.Handler
+import android.os.Looper
+import android.util.TypedValue
+import android.view.Gravity
 import android.view.InputDevice
 import android.view.KeyEvent
 import android.view.MotionEvent
+import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.TextView
 import com.pipefall.pressure.QuestShellView
+import com.pipefall.pressure.R
+import com.pipefall.pressure.debug.Overlay
+import com.pipefall.pressure.debug.Statistics
 import com.pipefall.pressure.simulation.SimulationCommand
 
 class QuestRenderView(context: Context) : FrameLayout(context) {
     private val surfaceView = GLSurfaceView(context)
     private val shellView = QuestShellView(context)
+    private val debugView = TextView(context)
+    private val gameOverView = TextView(context)
+    private val statistics = Statistics()
+    private val overlay = Overlay()
 
     val rendererController = InputController()
     val renderer = OpenXRRenderer()
     var onCommand: ((SimulationCommand) -> Unit)? = null
     private var triggerArmed = true
+
+    private val debugHandler = Handler(Looper.getMainLooper())
+    private val debugUpdateRunnable = object : Runnable {
+        override fun run() {
+            updateDebugOverlay()
+            updateGameOverBanner()
+            debugHandler.postDelayed(this, DEBUG_UPDATE_INTERVAL_MS)
+        }
+    }
 
     init {
         isFocusable = true
@@ -43,15 +67,64 @@ class QuestRenderView(context: Context) : FrameLayout(context) {
             ),
         )
 
+        debugView.apply {
+            setTextColor(Color.rgb(120, 240, 120))
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
+            typeface = Typeface.MONOSPACE
+            gravity = Gravity.START or Gravity.TOP
+            setPadding(dp(12), dp(72), dp(12), dp(12))
+            text = ""
+        }
+
+        addView(
+            debugView,
+            LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+            ),
+        )
+
+        gameOverView.apply {
+            setTextColor(Color.rgb(240, 80, 80))
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 32f)
+            typeface = Typeface.DEFAULT_BOLD
+            gravity = Gravity.CENTER
+            setPadding(dp(24), dp(24), dp(24), dp(24))
+            text = context.getString(R.string.game_over)
+            visibility = View.GONE
+        }
+
+        addView(
+            gameOverView,
+            LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+            ),
+        )
+
         requestFocus()
     }
 
     fun onResume() {
         surfaceView.onResume()
+        debugHandler.removeCallbacks(debugUpdateRunnable)
+        debugHandler.post(debugUpdateRunnable)
     }
 
     fun onPause() {
+        debugHandler.removeCallbacks(debugUpdateRunnable)
         surfaceView.onPause()
+    }
+
+    private fun updateDebugOverlay() {
+        val snapshot = statistics.snapshot(renderer.state)
+        val lines = overlay.render(snapshot, renderer.fps)
+        debugView.text = lines.joinToString("\n")
+    }
+
+    private fun updateGameOverBanner() {
+        gameOverView.visibility =
+            if (renderer.state.gameOver) View.VISIBLE else View.GONE
     }
 
     fun setStatus(text: CharSequence) {
@@ -130,4 +203,11 @@ class QuestRenderView(context: Context) : FrameLayout(context) {
             is SimulationCommand.Step -> "step ${command.ticks}"
             is SimulationCommand.TickWater -> "tick water ${command.ticks}"
         }
+
+    private fun dp(value: Int): Int =
+        (value * resources.displayMetrics.density).toInt()
+
+    private companion object {
+        const val DEBUG_UPDATE_INTERVAL_MS = 250L
+    }
 }

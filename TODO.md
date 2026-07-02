@@ -48,17 +48,14 @@ For every Ralph loop:
 - [x] Render water plane behind the wall.
 - [x] Render cracked and failed cell states.
 - [x] Add debug statistics snapshot.
+- [x] Add debug overlay for FPS, water height, max pressure, cracked count, failed count, support heatmap, and pressure heatmap.
+- [x] Add game over state rendering.
 
 ## Next
 
-- [ ] Add debug overlay for FPS, water height, max pressure, cracked count, failed count, support heatmap, and pressure heatmap.
+- [ ] Run on Meta Quest and record device notes.
 
 ## Backlog
 
-- [ ] Render fixed floating construction board.
-- [ ] Render locked board cells as simple 3D geometry.
-- [ ] Render active descending engineering module.
-- [ ] Render cracked and failed cell states.
-- [ ] Add debug overlay for FPS, water height, max pressure, cracked count, failed count, support heatmap, and pressure heatmap.
-- [ ] Add game over state rendering.
 - [ ] Run on Meta Quest and record device notes.
+- [ ] Add OpenXR/Meta XR SDK immersive VR rendering.

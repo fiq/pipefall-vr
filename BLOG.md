@@ -407,3 +407,53 @@ The fix was one line removed from the manifest. Without `com.oculus.intent.categ
 The user launched it from the library and saw the dam. The board was there. The loading dots were gone. The first successful in-headset render.
 
 Two device bugs, two one-line fixes, both found by reading what the device actually said rather than guessing. The NPE was in the dropbox. The loading was in the logcat. The device is the source of truth, and it is generous with evidence if you ask it the right questions.
+
+## Loop 22: The Dam Shows Its Numbers
+
+The debug overlay has been in the spec since the first document. FPS, water height, max pressure, cracked count, failed count, support heatmap, pressure heatmap. Loop 19 built the data seam — `StatisticsSnapshot` and `Statistics` — so the numbers existed in a form the renderer could trust. This loop built the pixels.
+
+The overlay is split the same way the rest of the debug package is split: a pure Kotlin formatter that can be unit-tested, and an Android view that reads from it. `Overlay` takes a `StatisticsSnapshot` and an FPS value and returns a list of text lines. The scalars are straightforward. The heatmaps are the interesting part: each occupied cell renders as a single intensity character, empty board positions render as dots, and values ten or above clamp to `#`. That keeps the grid compact enough to read on a Quest panel without scrolling.
+
+```text
+FPS 60
+Water 7
+Max pressure 5
+Cracked 3
+Failed 2
+Cells 12
+Ticks 42
+Pressure heatmap:
+0.
+5#
+Support heatmap:
+39#
+```
+
+The FPS counter lives in `OpenXRRenderer`, not in the overlay formatter. That is deliberate. The formatter stays pure Kotlin with no wall-clock access, so its output is deterministic and testable. The renderer owns the timing because it is the only type that knows when a frame actually finishes. It counts frames against `System.nanoTime()` and exposes a volatile `fps` field that the view polls.
+
+The view wiring is intentionally cheap. `QuestRenderView` now hosts a monospace `TextView` that updates every 250 milliseconds from the renderer state via `Statistics` and `Overlay`. That is four times a second, not once per frame, because the debug overlay does not need to be smooth. It needs to be legible. Polling at 250 ms keeps the text stable enough to read while avoiding per-frame text allocation on the GL thread.
+
+The first test run caught a real bug in my own expectations, not in the code. The pressure heatmap test expected `"00"` for a row where only one of two positions was occupied. The overlay correctly rendered the missing position as a dot: `"0."`. That is the right behaviour — a dot means "no cell here", a `0` means "cell present but zero pressure" — and the test was wrong, not the formatter. Fixed the expectation, kept the code.
+
+The dam now shows its working. The player can see the water rising, the pressure climbing, the cracks spreading, and the heatmaps glowing — all without leaving the headset. The first milestone acceptance list is one item shorter.
+
+## Loop 23: The Dam Says Stop
+
+Game over has been in the simulation since the orchestration loops. `SimulationState` carries a `gameOver` flag. `Simulation` sets it when water reaches the top of the board or when a spawned module cannot find a legal home. The debug overlay has printed a "GAME OVER" line since the overlay loop. But none of that is what a player sees when the dam finally fails. A line of monospace debug text is not a game over screen. It is a footnote.
+
+    water reaches row 20
+      -> SimulationState.gameOver = true
+      -> debug overlay prints "GAME OVER"
+      -> player sees... a footnote
+
+This loop added the player-facing banner. `QuestRenderView` now hosts a centered, bold, large red `TextView` that toggles between `View.GONE` and `View.VISIBLE` based on `renderer.state.gameOver`. It reuses the existing 250 ms polling runnable — the same one that drives the debug overlay — so there is no new timer, no new thread, and no per-frame allocation. The banner is a separate view from the debug text on purpose: the debug overlay is for the developer, the game over banner is for the player.
+
+    QuestRenderView
+      -> GLSurfaceView (the dam)
+      -> QuestShellView (title/status)
+      -> debugView (developer numbers)
+      -> gameOverView (player-facing banner)
+
+The simulation did not change. The debug overlay did not change. The only new behaviour is that the view layer now reads the `gameOver` flag it already had access to and shows a prominent red banner when the dam has failed. That is the smallest change that closes the gap between "the simulation knows the game is over" and "the player knows the game is over."
+
+The first milestone acceptance list is now complete on the rendering side. The dam can be built, water rises, pressure mounts, structures crack and fail, cascades resolve, the debug overlay shows the numbers, and game over is visible. What remains is OpenXR immersive rendering and a real Quest device run.
